@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Package, CreditCard, Clock, CheckCircle } from "lucide-react";
+import { ArrowLeft, Package, CreditCard, Clock, CheckCircle, FileText } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
 import type { Order } from "@/lib/types";
 import { Spinner, Badge, Button } from "@/components/ui";
 import { formatPrice, formatDate, formatDateTime } from "@/lib/utils";
+import { toast } from "sonner";
 
 const STATUS_COLORS: Record<string, "success" | "warning" | "error" | "default"> = {
     CONFIRMED: "success",
@@ -148,6 +149,19 @@ export default function OrderDetailPage() {
                             </div>
                         </div>
                     </div>
+
+                    {/* Invoice */}
+                    <button
+                        onClick={async () => {
+                            try {
+                                const invoice = await apiClient.get<{ id: string; invoiceNumber: string }>(`/api/invoices/order/${order.id}`);
+                                toast.success(`Invoice ${invoice.invoiceNumber || invoice.id.slice(0, 8)} loaded`);
+                            } catch { toast.error("Invoice not available yet"); }
+                        }}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl border border-gray-200 text-sm font-medium transition-colors cursor-pointer"
+                    >
+                        <FileText className="h-4 w-4" /> Download Invoice
+                    </button>
 
                     {/* Timeline */}
                     <div className="bg-white rounded-xl border border-gray-200 p-5">

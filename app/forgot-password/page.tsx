@@ -27,33 +27,39 @@ export default function ForgotPasswordPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-            <div className="w-full max-w-md">
-                <div className="flex items-center gap-2 mb-8 justify-center">
-                    <div className="h-10 w-10 rounded-lg bg-primary-600 flex items-center justify-center"><Store className="h-6 w-6 text-white" /></div>
-                    <span className="text-2xl font-bold text-gray-900">Buy<span className="text-primary-600">Bizz</span></span>
+        <div style={{ minHeight: "100vh", background: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", padding: "48px 24px" }}>
+            <div style={{ width: "100%", maxWidth: 400 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "center", marginBottom: 40 }}>
+                    <div style={{ height: 32, width: 32, borderRadius: 8, background: "#2563eb", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <Store style={{ height: 20, width: 20, color: "#fff" }} />
+                    </div>
+                    <span style={{ fontSize: 20, fontWeight: 600, color: "#111827", letterSpacing: "-0.01em" }}>Buy<span style={{ color: "#2563eb" }}>Bizz</span></span>
                 </div>
 
                 {sent ? (
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 text-center">
-                        <div className="w-16 h-16 rounded-full bg-primary-100 flex items-center justify-center mx-auto mb-4"><Mail className="h-8 w-8 text-primary-600" /></div>
-                        <h2 className="text-xl font-bold text-gray-900 mb-2">Check your email</h2>
-                        <p className="text-gray-500 text-sm mb-6">We&apos;ve sent a password reset link to your email address.</p>
-                        <Link href="/login" className="text-sm text-primary-600 hover:text-primary-700 font-medium">Back to login</Link>
+                    <div className="text-center">
+                        <div className="w-12 h-12 rounded-full bg-primary-50 flex items-center justify-center mx-auto mb-4">
+                            <Mail className="h-6 w-6 text-primary-500" />
+                        </div>
+                        <h2 className="text-lg font-semibold text-gray-900 mb-1">Check your email</h2>
+                        <p className="text-sm text-gray-400 mb-6">We&apos;ve sent a password reset link to your email.</p>
+                        <Link href="/login" className="text-xs text-primary-600 hover:text-primary-700 font-medium">Back to login</Link>
                     </div>
                 ) : (
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-                        <h2 className="text-2xl font-bold text-gray-900 text-center mb-2">Forgot your password?</h2>
-                        <p className="text-gray-500 text-sm text-center mb-6">Enter your email and we&apos;ll send you a reset link.</p>
-                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                    <>
+                        <div className="text-center mb-8">
+                            <h2 className="text-xl font-semibold text-gray-900">Forgot your password?</h2>
+                            <p className="text-sm text-gray-400 mt-1">Enter your email and we&apos;ll send a reset link.</p>
+                        </div>
+                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                             <Input label="Email" type="email" placeholder="you@example.com" leftIcon={<Mail className="h-4 w-4" />} error={errors.email?.message}
                                 {...register("email", { required: "Email is required", pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Invalid email" } })} />
                             <Button type="submit" className="w-full" size="lg" isLoading={loading}>Send reset link</Button>
                         </form>
-                        <Link href="/login" className="flex items-center justify-center gap-2 text-sm text-gray-500 hover:text-gray-700 mt-6">
-                            <ArrowLeft className="h-4 w-4" /> Back to login
+                        <Link href="/login" className="flex items-center justify-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 mt-6">
+                            <ArrowLeft className="h-3.5 w-3.5" /> Back to login
                         </Link>
-                    </div>
+                    </>
                 )}
             </div>
         </div>

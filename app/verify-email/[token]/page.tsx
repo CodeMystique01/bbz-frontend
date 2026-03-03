@@ -29,13 +29,13 @@ export default function VerifyEmailPage() {
     }, [token]);
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-            <div className="w-full max-w-md text-center">
-                <div className="flex items-center gap-2 mb-8 justify-center">
-                    <div className="h-10 w-10 rounded-lg bg-primary-600 flex items-center justify-center"><Store className="h-6 w-6 text-white" /></div>
-                    <span className="text-2xl font-bold text-gray-900">Buy<span className="text-primary-600">Bizz</span></span>
+        <div style={{ minHeight: "100vh", background: "#f9fafb", display: "flex", alignItems: "center", justifyContent: "center", padding: "48px 24px" }}>
+            <div style={{ width: "100%", maxWidth: 448, textAlign: "center" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "center", marginBottom: 32 }}>
+                    <div style={{ height: 40, width: 40, borderRadius: 8, background: "#2563eb", display: "flex", alignItems: "center", justifyContent: "center" }}><Store style={{ height: 24, width: 24, color: "#fff" }} /></div>
+                    <span style={{ fontSize: 24, fontWeight: 700, color: "#111827" }}>Buy<span style={{ color: "#2563eb" }}>Bizz</span></span>
                 </div>
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+                <div style={{ background: "#ffffff", borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.06)", border: "1px solid #e5e7eb", padding: 32 }}>
                     {status === "loading" && (
                         <div className="flex flex-col items-center gap-4">
                             <Loader2 className="h-12 w-12 text-primary-600 animate-spin" />

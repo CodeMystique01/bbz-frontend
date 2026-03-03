@@ -11,11 +11,25 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ sidebar, children }: DashboardLayoutProps) {
     return (
-        <div className="min-h-screen flex flex-col bg-gray-50">
+        <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "#f9fafb" }}>
             <Navbar />
-            <div className="flex-1 flex w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 gap-8">
+            <div
+                style={{
+                    flex: 1,
+                    display: "flex",
+                    width: "100%",
+                    maxWidth: 1200,
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                    paddingLeft: 24,
+                    paddingRight: 24,
+                    paddingTop: 32,
+                    paddingBottom: 32,
+                    gap: 32,
+                }}
+            >
                 {sidebar}
-                <main className="flex-1 min-w-0">{children}</main>
+                <main style={{ flex: 1, minWidth: 0 }}>{children}</main>
             </div>
             <Footer />
         </div>

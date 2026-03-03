@@ -1,141 +1,116 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Package, CheckCircle, XCircle, Eye } from "lucide-react";
+import { Shield, Check, X, Package, Filter } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
 import type { Product } from "@/lib/types";
 import { Spinner, Badge } from "@/components/ui";
 import { formatPrice, formatDate } from "@/lib/utils";
 import { toast } from "sonner";
 
+const APPROVAL_COLORS: Record<string, "success" | "warning" | "error" | "default"> = {
+    APPROVED: "success", PENDING: "warning", REJECTED: "error",
+};
+
 export default function AdminProductsPage() {
     const [products, setProducts] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [tab, setTab] = useState<"pending" | "all">("pending");
+    const [view, setView] = useState<"pending" | "all">("pending");
 
-    useEffect(() => { loadProducts(); }, [tab]);
+    useEffect(() => { loadProducts(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [view]);
 
     async function loadProducts() {
         setIsLoading(true);
         try {
-            const endpoint = tab === "pending" ? "/api/admin/products/pending" : "/api/admin/products";
-            const data = await apiClient.get<Product[] | { products: Product[] }>(endpoint);
-            setProducts(Array.isArray(data) ? data : data.products || []);
-        } catch {
-            setProducts([]);
-        } finally {
-            setIsLoading(false);
-        }
+            const endpoint = view === "pending" ? "/api/admin/products/pending" : "/api/admin/products";
+            const data = await apiClient.get<Product[]>(endpoint);
+            setProducts(Array.isArray(data) ? data : []);
+        } catch { setProducts([]); } finally { setIsLoading(false); }
     }
 
-    async function handleApprove(id: string) {
+    async function handleAction(id: string, action: "approve" | "reject") {
         try {
-            await apiClient.post(`/api/admin/products/${id}/approve`);
+            const status = action === "approve" ? "APPROVED" : "REJECTED";
+            await apiClient.put(`/api/admin/products/${id}`, { approvalStatus: status });
             setProducts((prev) => prev.filter((p) => p.id !== id));
-            toast.success("Product approved");
-        } catch {
-            toast.error("Failed to approve product");
-        }
-    }
-
-    async function handleReject(id: string) {
-        try {
-            await apiClient.post(`/api/admin/products/${id}/reject`);
-            setProducts((prev) => prev.filter((p) => p.id !== id));
-            toast.success("Product rejected");
-        } catch {
-            toast.error("Failed to reject product");
-        }
+            toast.success(`Product ${action}d`);
+        } catch { toast.error(`Failed to ${action} product`); }
     }
 
     return (
         <div className="space-y-6 animate-fade-in">
             <div>
-                <h1 className="text-2xl font-bold text-gray-900">Product Moderation</h1>
-                <p className="text-sm text-gray-500 mt-1">Review and approve vendor product submissions</p>
+                <h1 className="text-xl font-semibold text-gray-900">Product Moderation</h1>
+                <p className="text-xs text-gray-400 mt-0.5">Review and approve vendor products</p>
             </div>
 
-            {/* Tabs */}
-            <div className="flex gap-1 bg-gray-100 rounded-lg p-1 w-fit">
-                {(["pending", "all"] as const).map((t) => (
-                    <button
-                        key={t}
-                        onClick={() => setTab(t)}
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${tab === t ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
-                            }`}
-                    >
-                        {t === "pending" ? "Pending Review" : "All Products"}
+            <div className="flex items-center gap-2">
+                <Filter className="h-3.5 w-3.5 text-gray-300" />
+                <div className="flex rounded-lg border border-gray-200 overflow-hidden">
+                    <button onClick={() => setView("pending")}
+                        className={`px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${view === "pending" ? "bg-gray-900 text-white" : "bg-white text-gray-500 hover:bg-gray-50"}`}>
+                        Pending
                     </button>
-                ))}
+                    <button onClick={() => setView("all")}
+                        className={`px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${view === "all" ? "bg-gray-900 text-white" : "bg-white text-gray-500 hover:bg-gray-50"}`}>
+                        All
+                    </button>
+                </div>
             </div>
 
             {isLoading ? (
                 <div className="flex justify-center py-16"><Spinner size="lg" /></div>
             ) : products.length === 0 ? (
-                <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-                    <Package className="h-10 w-10 text-gray-200 mx-auto mb-3" />
-                    <p className="font-medium text-gray-900">{tab === "pending" ? "No products pending review" : "No products found"}</p>
-                    <p className="text-sm text-gray-500 mt-1">{tab === "pending" ? "All caught up! 🎉" : ""}</p>
+                <div className="rounded-xl border border-gray-100 p-12 text-center">
+                    <Shield className="h-8 w-8 text-gray-200 mx-auto mb-2" />
+                    <p className="text-sm font-medium text-gray-900">{view === "pending" ? "No products pending review" : "No products found"}</p>
+                    <p className="text-xs text-gray-400 mt-1">Products submitted by vendors will appear here</p>
                 </div>
             ) : (
-                <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                <div className="rounded-xl border border-gray-100 overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm">
                             <thead>
-                                <tr className="border-b border-gray-100 text-left">
-                                    <th className="px-5 py-3 text-xs text-gray-500 font-medium uppercase">Product</th>
-                                    <th className="px-5 py-3 text-xs text-gray-500 font-medium uppercase">Price</th>
-                                    <th className="px-5 py-3 text-xs text-gray-500 font-medium uppercase">Category</th>
-                                    <th className="px-5 py-3 text-xs text-gray-500 font-medium uppercase">Status</th>
-                                    <th className="px-5 py-3 text-xs text-gray-500 font-medium uppercase">Submitted</th>
-                                    <th className="px-5 py-3 text-xs text-gray-500 font-medium uppercase">Actions</th>
+                                <tr className="border-b border-gray-50 text-left">
+                                    <th className="px-4 py-3 text-[11px] text-gray-400 font-medium uppercase tracking-wider">Product</th>
+                                    <th className="px-4 py-3 text-[11px] text-gray-400 font-medium uppercase tracking-wider">Vendor</th>
+                                    <th className="px-4 py-3 text-[11px] text-gray-400 font-medium uppercase tracking-wider">Price</th>
+                                    <th className="px-4 py-3 text-[11px] text-gray-400 font-medium uppercase tracking-wider">Status</th>
+                                    <th className="px-4 py-3 text-[11px] text-gray-400 font-medium uppercase tracking-wider">Submitted</th>
+                                    {view === "pending" && <th className="px-4 py-3 text-[11px] text-gray-400 font-medium uppercase tracking-wider">Actions</th>}
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-100">
+                            <tbody className="divide-y divide-gray-50">
                                 {products.map((product) => (
-                                    <tr key={product.id} className="hover:bg-gray-50">
-                                        <td className="px-5 py-4">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden shrink-0">
+                                    <tr key={product.id} className="hover:bg-gray-50/50">
+                                        <td className="px-4 py-3">
+                                            <div className="flex items-center gap-2.5">
+                                                <div className="w-8 h-8 rounded-lg bg-gray-50 overflow-hidden shrink-0">
                                                     <img src={product.imageUrl || "/placeholder-product.png"} alt={product.name}
                                                         className="w-full h-full object-cover"
-                                                        onError={(e) => { (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%23f1f5f9' width='100' height='100'/%3E%3C/svg%3E"; }}
-                                                    />
+                                                        onError={(e) => { (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%23fafafa' width='100' height='100'/%3E%3C/svg%3E"; }} />
                                                 </div>
-                                                <div className="min-w-0">
-                                                    <p className="font-medium text-gray-900 truncate max-w-[200px]">{product.name}</p>
-                                                    <p className="text-xs text-gray-400 truncate max-w-[200px]">{product.vendor?.email || "Unknown vendor"}</p>
-                                                </div>
+                                                <span className="text-sm font-medium text-gray-900 truncate max-w-[180px]">{product.name}</span>
                                             </div>
                                         </td>
-                                        <td className="px-5 py-4 font-semibold text-gray-900">{formatPrice(product.price)}</td>
-                                        <td className="px-5 py-4 text-gray-500">{product.category || "—"}</td>
-                                        <td className="px-5 py-4">
-                                            <Badge variant={product.approvalStatus === "APPROVED" ? "success" : product.approvalStatus === "REJECTED" ? "error" : "warning"}>
-                                                {product.approvalStatus}
-                                            </Badge>
-                                        </td>
-                                        <td className="px-5 py-4 text-gray-500">{formatDate(product.createdAt)}</td>
-                                        <td className="px-5 py-4">
-                                            <div className="flex items-center gap-1">
-                                                <a href={`/products/${product.id}`} target="_blank" rel="noopener noreferrer"
-                                                    className="p-1.5 text-gray-400 hover:text-primary-600 transition-colors">
-                                                    <Eye className="h-4 w-4" />
-                                                </a>
-                                                {product.approvalStatus === "PENDING" && (
-                                                    <>
-                                                        <button onClick={() => handleApprove(product.id)} title="Approve"
-                                                            className="p-1.5 text-gray-400 hover:text-green-600 transition-colors cursor-pointer">
-                                                            <CheckCircle className="h-4 w-4" />
-                                                        </button>
-                                                        <button onClick={() => handleReject(product.id)} title="Reject"
-                                                            className="p-1.5 text-gray-400 hover:text-red-600 transition-colors cursor-pointer">
-                                                            <XCircle className="h-4 w-4" />
-                                                        </button>
-                                                    </>
-                                                )}
-                                            </div>
-                                        </td>
+                                        <td className="px-4 py-3 text-gray-400 text-xs">{product.vendor?.name || product.vendor?.email || "—"}</td>
+                                        <td className="px-4 py-3 font-medium text-gray-900 text-xs">{formatPrice(product.price)}</td>
+                                        <td className="px-4 py-3"><Badge variant={APPROVAL_COLORS[product.approvalStatus] || "default"}>{product.approvalStatus}</Badge></td>
+                                        <td className="px-4 py-3 text-gray-400 text-xs">{formatDate(product.createdAt)}</td>
+                                        {view === "pending" && (
+                                            <td className="px-4 py-3">
+                                                <div className="flex items-center gap-1">
+                                                    <button onClick={() => handleAction(product.id, "approve")}
+                                                        className="p-1.5 text-green-500 hover:bg-green-50 rounded-md transition-colors cursor-pointer" title="Approve">
+                                                        <Check className="h-3.5 w-3.5" />
+                                                    </button>
+                                                    <button onClick={() => handleAction(product.id, "reject")}
+                                                        className="p-1.5 text-red-400 hover:bg-red-50 rounded-md transition-colors cursor-pointer" title="Reject">
+                                                        <X className="h-3.5 w-3.5" />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        )}
                                     </tr>
                                 ))}
                             </tbody>

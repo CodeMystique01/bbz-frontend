@@ -3,46 +3,55 @@ import { Store } from "lucide-react";
 
 export function Footer() {
     return (
-        <footer className="bg-gray-900 text-gray-300">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                    <div className="md:col-span-1">
+        <footer className="bg-gray-900 text-gray-400">
+            <div style={{ maxWidth: 1100, marginLeft: "auto", marginRight: "auto", paddingLeft: 24, paddingRight: 24, paddingTop: 56, paddingBottom: 56 }}>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
+                    <div className="col-span-2 md:col-span-1">
                         <Link href="/" className="flex items-center gap-2 mb-4">
                             <div className="h-8 w-8 rounded-lg bg-primary-600 flex items-center justify-center">
-                                <Store className="h-5 w-5 text-white" />
+                                <Store className="h-4.5 w-4.5 text-white" />
                             </div>
-                            <span className="text-xl font-bold text-white">Buy<span className="text-primary-400">Bizz</span></span>
+                            <span className="text-lg font-semibold text-white tracking-tight">
+                                Buy<span className="text-primary-400">Bizz</span>
+                            </span>
                         </Link>
-                        <p className="text-sm text-gray-400 leading-relaxed">Your trusted marketplace for digital products. Buy and sell with confidence.</p>
+                        <p className="text-sm text-gray-500 leading-relaxed max-w-xs">
+                            India&apos;s trusted digital marketplace. Buy and sell software, templates, and creative assets.
+                        </p>
                     </div>
                     <div>
-                        <h4 className="text-sm font-semibold text-white mb-4">Marketplace</h4>
+                        <h4 className="text-xs font-semibold text-gray-300 uppercase tracking-wider mb-4">Marketplace</h4>
                         <ul className="space-y-2.5">
-                            <li><Link href="/products" className="text-sm hover:text-white transition-colors">Browse Products</Link></li>
-                            <li><Link href="/signup?role=VENDOR" className="text-sm hover:text-white transition-colors">Become a Seller</Link></li>
-                            <li><Link href="/products" className="text-sm hover:text-white transition-colors">Categories</Link></li>
+                            <li><Link href="/products" className="text-sm text-gray-500 hover:text-white transition-colors">Browse Products</Link></li>
+                            <li><Link href="/products?category=Software" className="text-sm text-gray-500 hover:text-white transition-colors">Software</Link></li>
+                            <li><Link href="/products?category=Templates" className="text-sm text-gray-500 hover:text-white transition-colors">Templates</Link></li>
+                            <li><Link href="/signup?role=VENDOR" className="text-sm text-gray-500 hover:text-white transition-colors">Become a Vendor</Link></li>
                         </ul>
                     </div>
                     <div>
-                        <h4 className="text-sm font-semibold text-white mb-4">Support</h4>
+                        <h4 className="text-xs font-semibold text-gray-300 uppercase tracking-wider mb-4">Company</h4>
                         <ul className="space-y-2.5">
-                            <li><Link href="#" className="text-sm hover:text-white transition-colors">Help Center</Link></li>
-                            <li><Link href="#" className="text-sm hover:text-white transition-colors">Contact Us</Link></li>
-                            <li><Link href="#" className="text-sm hover:text-white transition-colors">Refund Policy</Link></li>
+                            <li><Link href="#" className="text-sm text-gray-500 hover:text-white transition-colors">About Us</Link></li>
+                            <li><Link href="#" className="text-sm text-gray-500 hover:text-white transition-colors">Help Center</Link></li>
+                            <li><Link href="#" className="text-sm text-gray-500 hover:text-white transition-colors">Contact</Link></li>
                         </ul>
                     </div>
                     <div>
-                        <h4 className="text-sm font-semibold text-white mb-4">Legal</h4>
+                        <h4 className="text-xs font-semibold text-gray-300 uppercase tracking-wider mb-4">Legal</h4>
                         <ul className="space-y-2.5">
-                            <li><Link href="#" className="text-sm hover:text-white transition-colors">Terms of Service</Link></li>
-                            <li><Link href="#" className="text-sm hover:text-white transition-colors">Privacy Policy</Link></li>
-                            <li><Link href="#" className="text-sm hover:text-white transition-colors">Cookie Policy</Link></li>
+                            <li><Link href="#" className="text-sm text-gray-500 hover:text-white transition-colors">Terms of Service</Link></li>
+                            <li><Link href="#" className="text-sm text-gray-500 hover:text-white transition-colors">Privacy Policy</Link></li>
+                            <li><Link href="#" className="text-sm text-gray-500 hover:text-white transition-colors">Refund Policy</Link></li>
                         </ul>
                     </div>
                 </div>
-                <div className="mt-10 pt-8 border-t border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <p className="text-xs text-gray-500">&copy; {new Date().getFullYear()} BuyBizz. All rights reserved.</p>
-                    <span className="text-xs text-gray-500">Made in India 🇮🇳</span>
+                <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <p className="text-xs text-gray-600">&copy; {new Date().getFullYear()} BuyBizz. All rights reserved.</p>
+                    <div className="flex items-center gap-4 text-xs text-gray-600">
+                        <span>Made in India 🇮🇳</span>
+                        <span>•</span>
+                        <span>Powered by Razorpay</span>
+                    </div>
                 </div>
             </div>
         </footer>

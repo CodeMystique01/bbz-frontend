@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import {
-    Search,
     ShoppingCart,
     Menu,
     X,
@@ -15,7 +14,6 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/store/auth-store";
 import { Avatar } from "@/components/ui";
-import { cn } from "@/lib/utils";
 
 export function Navbar() {
     const { isAuthenticated, user, logout } = useAuthStore();
@@ -41,36 +39,51 @@ export function Navbar() {
                 : "/dashboard/buyer";
 
     return (
-        <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200">
-            <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between h-16">
+        <header
+            style={{
+                position: "sticky",
+                top: 0,
+                zIndex: 50,
+                background: "rgba(255,255,255,0.85)",
+                backdropFilter: "blur(16px)",
+                WebkitBackdropFilter: "blur(16px)",
+                borderBottom: "1px solid #f3f4f6",
+            }}
+        >
+            <nav style={{ maxWidth: 1100, marginLeft: "auto", marginRight: "auto", paddingLeft: 24, paddingRight: 24 }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 56 }}>
                     {/* Logo */}
-                    <Link href="/" className="flex items-center gap-2 shrink-0">
-                        <div className="h-8 w-8 rounded-lg bg-primary-600 flex items-center justify-center">
-                            <Store className="h-5 w-5 text-white" />
+                    <Link href="/" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none", flexShrink: 0 }}>
+                        <div
+                            style={{
+                                height: 28,
+                                width: 28,
+                                borderRadius: 8,
+                                background: "#2563eb",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                            }}
+                        >
+                            <Store style={{ height: 16, width: 16, color: "#fff" }} />
                         </div>
-                        <span className="text-xl font-bold text-gray-900">
-                            Buy<span className="text-primary-600">Bizz</span>
+                        <span style={{ fontSize: 18, fontWeight: 600, color: "#111827", letterSpacing: "-0.01em" }}>
+                            Buy<span style={{ color: "#2563eb" }}>Bizz</span>
                         </span>
                     </Link>
 
-                    {/* Search Bar — Desktop */}
-                    <div className="hidden md:flex flex-1 max-w-lg mx-8">
-                        <div className="relative w-full">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                            <input
-                                type="text"
-                                placeholder="Search products..."
-                                className="w-full h-10 pl-10 pr-4 rounded-lg border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 focus:bg-white transition-colors"
-                            />
-                        </div>
-                    </div>
-
                     {/* Right section — Desktop */}
-                    <div className="hidden md:flex items-center gap-3">
+                    <div style={{ display: "flex", alignItems: "center", gap: 4 }} className="hidden md:flex">
                         <Link
                             href="/products"
-                            className="text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                            style={{
+                                fontSize: 14,
+                                color: "#6b7280",
+                                padding: "8px 12px",
+                                borderRadius: 8,
+                                textDecoration: "none",
+                                transition: "background .15s",
+                            }}
                         >
                             Products
                         </Link>
@@ -79,52 +92,100 @@ export function Navbar() {
                             <>
                                 <Link
                                     href="/cart"
-                                    className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                                    style={{
+                                        position: "relative",
+                                        padding: 8,
+                                        color: "#9ca3af",
+                                        borderRadius: 8,
+                                        textDecoration: "none",
+                                        display: "flex",
+                                    }}
                                 >
-                                    <ShoppingCart className="h-5 w-5" />
+                                    <ShoppingCart style={{ height: 18, width: 18 }} />
                                 </Link>
 
-                                <div className="relative" ref={userMenuRef}>
+                                <div style={{ position: "relative", marginLeft: 4 }} ref={userMenuRef}>
                                     <button
                                         onClick={() => setUserMenuOpen(!userMenuOpen)}
-                                        className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 6,
+                                            padding: 6,
+                                            borderRadius: 8,
+                                            border: "none",
+                                            background: "transparent",
+                                            cursor: "pointer",
+                                        }}
                                     >
                                         <Avatar name={user?.name || user?.email} size="sm" />
-                                        <ChevronDown className={cn("h-4 w-4 text-gray-500 transition-transform", userMenuOpen && "rotate-180")} />
+                                        <ChevronDown
+                                            style={{
+                                                height: 14,
+                                                width: 14,
+                                                color: "#9ca3af",
+                                                transition: "transform .15s",
+                                                transform: userMenuOpen ? "rotate(180deg)" : "none",
+                                            }}
+                                        />
                                     </button>
 
                                     {userMenuOpen && (
-                                        <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-1 animate-fade-in">
-                                            <div className="px-4 py-3 border-b border-gray-100">
-                                                <p className="text-sm font-medium text-gray-900 truncate">
+                                        <div
+                                            style={{
+                                                position: "absolute",
+                                                right: 0,
+                                                marginTop: 8,
+                                                width: 208,
+                                                background: "#ffffff",
+                                                borderRadius: 12,
+                                                boxShadow: "0 10px 40px rgba(0,0,0,0.12)",
+                                                border: "1px solid #f3f4f6",
+                                                padding: "4px 0",
+                                            }}
+                                        >
+                                            <div style={{ padding: "12px 16px", borderBottom: "1px solid #f9fafb" }}>
+                                                <p style={{ fontSize: 14, fontWeight: 500, color: "#111827", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                                                     {user?.name || user?.email}
                                                 </p>
-                                                <p className="text-xs text-gray-500 mt-0.5 capitalize">
+                                                <p style={{ fontSize: 12, color: "#9ca3af", margin: "2px 0 0", textTransform: "capitalize" }}>
                                                     {user?.role?.toLowerCase()}
                                                 </p>
                                             </div>
                                             <Link
                                                 href={dashboardPath}
-                                                className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                                                style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 16px", fontSize: 14, color: "#4b5563", textDecoration: "none" }}
                                                 onClick={() => setUserMenuOpen(false)}
                                             >
-                                                <LayoutDashboard className="h-4 w-4" />
+                                                <LayoutDashboard style={{ height: 16, width: 16, color: "#9ca3af" }} />
                                                 Dashboard
                                             </Link>
                                             <Link
                                                 href="/dashboard/settings"
-                                                className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                                                style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 16px", fontSize: 14, color: "#4b5563", textDecoration: "none" }}
                                                 onClick={() => setUserMenuOpen(false)}
                                             >
-                                                <User className="h-4 w-4" />
+                                                <User style={{ height: 16, width: 16, color: "#9ca3af" }} />
                                                 Profile
                                             </Link>
-                                            <div className="border-t border-gray-100 mt-1 pt-1">
+                                            <div style={{ borderTop: "1px solid #f9fafb", marginTop: 4, paddingTop: 4 }}>
                                                 <button
                                                     onClick={() => { logout(); setUserMenuOpen(false); }}
-                                                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors w-full cursor-pointer"
+                                                    style={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        gap: 12,
+                                                        padding: "10px 16px",
+                                                        fontSize: 14,
+                                                        color: "#ef4444",
+                                                        width: "100%",
+                                                        cursor: "pointer",
+                                                        border: "none",
+                                                        background: "transparent",
+                                                        textAlign: "left",
+                                                    }}
                                                 >
-                                                    <LogOut className="h-4 w-4" />
+                                                    <LogOut style={{ height: 16, width: 16 }} />
                                                     Log out
                                                 </button>
                                             </div>
@@ -133,11 +194,22 @@ export function Navbar() {
                                 </div>
                             </>
                         ) : (
-                            <div className="flex items-center gap-2">
-                                <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+                            <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: 8 }}>
+                                <Link href="/login" style={{ fontSize: 14, color: "#6b7280", padding: "6px 12px", borderRadius: 8, textDecoration: "none" }}>
                                     Log in
                                 </Link>
-                                <Link href="/signup" className="text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 px-4 py-2 rounded-lg transition-colors shadow-sm">
+                                <Link
+                                    href="/signup"
+                                    style={{
+                                        fontSize: 14,
+                                        fontWeight: 500,
+                                        color: "#ffffff",
+                                        background: "#2563eb",
+                                        padding: "6px 16px",
+                                        borderRadius: 8,
+                                        textDecoration: "none",
+                                    }}
+                                >
                                     Sign up
                                 </Link>
                             </div>
@@ -147,31 +219,28 @@ export function Navbar() {
                     {/* Mobile menu button */}
                     <button
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        className="md:hidden p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
+                        className="md:hidden"
+                        style={{ padding: 8, color: "#9ca3af", borderRadius: 8, border: "none", background: "transparent", cursor: "pointer" }}
                     >
-                        {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                        {mobileMenuOpen ? <X style={{ height: 20, width: 20 }} /> : <Menu style={{ height: 20, width: 20 }} />}
                     </button>
                 </div>
 
                 {/* Mobile Menu */}
                 {mobileMenuOpen && (
-                    <div className="md:hidden py-4 border-t border-gray-100 animate-fade-in">
-                        <div className="relative mb-4">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                            <input type="text" placeholder="Search products..." className="w-full h-10 pl-10 pr-4 rounded-lg border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500" />
-                        </div>
-                        <div className="space-y-1">
-                            <Link href="/products" className="block px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg" onClick={() => setMobileMenuOpen(false)}>Products</Link>
+                    <div className="md:hidden" style={{ padding: "12px 0", borderTop: "1px solid #f9fafb" }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                            <Link href="/products" style={{ display: "block", padding: "10px 12px", fontSize: 14, color: "#4b5563", borderRadius: 8, textDecoration: "none" }} onClick={() => setMobileMenuOpen(false)}>Products</Link>
                             {isAuthenticated ? (
                                 <>
-                                    <Link href="/cart" className="block px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg" onClick={() => setMobileMenuOpen(false)}>Cart</Link>
-                                    <Link href={dashboardPath} className="block px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg" onClick={() => setMobileMenuOpen(false)}>Dashboard</Link>
-                                    <button onClick={() => { logout(); setMobileMenuOpen(false); }} className="block w-full text-left px-3 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg cursor-pointer">Log out</button>
+                                    <Link href="/cart" style={{ display: "block", padding: "10px 12px", fontSize: 14, color: "#4b5563", borderRadius: 8, textDecoration: "none" }} onClick={() => setMobileMenuOpen(false)}>Cart</Link>
+                                    <Link href={dashboardPath} style={{ display: "block", padding: "10px 12px", fontSize: 14, color: "#4b5563", borderRadius: 8, textDecoration: "none" }} onClick={() => setMobileMenuOpen(false)}>Dashboard</Link>
+                                    <button onClick={() => { logout(); setMobileMenuOpen(false); }} style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 12px", fontSize: 14, color: "#ef4444", borderRadius: 8, border: "none", background: "transparent", cursor: "pointer" }}>Log out</button>
                                 </>
                             ) : (
-                                <div className="flex gap-2 pt-2">
-                                    <Link href="/login" className="flex-1 text-center text-sm font-medium text-gray-700 border border-gray-300 px-4 py-2.5 rounded-lg hover:bg-gray-50" onClick={() => setMobileMenuOpen(false)}>Log in</Link>
-                                    <Link href="/signup" className="flex-1 text-center text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 px-4 py-2.5 rounded-lg" onClick={() => setMobileMenuOpen(false)}>Sign up</Link>
+                                <div style={{ display: "flex", gap: 8, paddingTop: 8 }}>
+                                    <Link href="/login" style={{ flex: 1, textAlign: "center", fontSize: 14, color: "#4b5563", border: "1px solid #e5e7eb", padding: "8px 16px", borderRadius: 8, textDecoration: "none" }} onClick={() => setMobileMenuOpen(false)}>Log in</Link>
+                                    <Link href="/signup" style={{ flex: 1, textAlign: "center", fontSize: 14, fontWeight: 500, color: "#ffffff", background: "#2563eb", padding: "8px 16px", borderRadius: 8, textDecoration: "none" }} onClick={() => setMobileMenuOpen(false)}>Sign up</Link>
                                 </div>
                             )}
                         </div>
