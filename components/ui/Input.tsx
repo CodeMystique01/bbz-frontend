@@ -25,25 +25,51 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                         {label}
                     </label>
                 )}
-                <div className="relative">
+                <div style={{ position: "relative" }}>
                     {leftIcon && (
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                        <span
+                            style={{
+                                position: "absolute",
+                                left: 12,
+                                top: "50%",
+                                transform: "translateY(-50%)",
+                                color: "#9ca3af",
+                                pointerEvents: "none",
+                            }}
+                        >
                             {leftIcon}
                         </span>
                     )}
                     <input
                         ref={ref}
                         id={inputId}
-                        className={cn(
-                            "w-full h-10 px-3 rounded-lg border bg-white text-sm transition-colors",
-                            "placeholder:text-gray-400",
-                            "focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500",
-                            leftIcon && "pl-10",
-                            error
-                                ? "border-red-300 focus:ring-red-500/20 focus:border-red-500"
-                                : "border-gray-200 hover:border-gray-300",
-                            className
-                        )}
+                        style={{
+                            width: "100%",
+                            height: 40,
+                            paddingLeft: leftIcon ? 40 : 12,
+                            paddingRight: 12,
+                            borderRadius: 8,
+                            border: error ? "1px solid #fca5a5" : "1px solid #e5e7eb",
+                            backgroundColor: "#fff",
+                            fontSize: 14,
+                            color: "#111827",
+                            outline: "none",
+                            transition: "border-color 0.15s",
+                            boxSizing: "border-box",
+                        }}
+                        className={className}
+                        onFocus={(e) => {
+                            e.currentTarget.style.borderColor = error ? "#ef4444" : "#2563eb";
+                            e.currentTarget.style.boxShadow = error
+                                ? "0 0 0 3px rgba(239,68,68,0.1)"
+                                : "0 0 0 3px rgba(37,99,235,0.1)";
+                            props.onFocus?.(e);
+                        }}
+                        onBlur={(e) => {
+                            e.currentTarget.style.borderColor = error ? "#fca5a5" : "#e5e7eb";
+                            e.currentTarget.style.boxShadow = "none";
+                            props.onBlur?.(e);
+                        }}
                         {...props}
                     />
                 </div>
