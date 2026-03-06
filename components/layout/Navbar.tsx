@@ -13,13 +13,24 @@ import {
     Store,
 } from "lucide-react";
 import { useAuthStore } from "@/store/auth-store";
+import { useCartStore } from "@/store/cart-store";
 import { Avatar } from "@/components/ui";
 
 export function Navbar() {
     const { isAuthenticated, user, logout } = useAuthStore();
+    const { itemCount, fetchCart } = useCartStore();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const userMenuRef = useRef<HTMLDivElement>(null);
+    const cartFetched = useRef(false);
+
+    useEffect(() => {
+        if (isAuthenticated && !cartFetched.current) {
+            cartFetched.current = true;
+            fetchCart();
+        }
+        if (!isAuthenticated) cartFetched.current = false;
+    }, [isAuthenticated, fetchCart]);
 
     useEffect(() => {
         function handleClick(e: MouseEvent) {
@@ -102,6 +113,29 @@ export function Navbar() {
                                     }}
                                 >
                                     <ShoppingCart style={{ height: 18, width: 18 }} />
+                                    {itemCount > 0 && (
+                                        <span
+                                            style={{
+                                                position: "absolute",
+                                                top: 2,
+                                                right: 2,
+                                                minWidth: 16,
+                                                height: 16,
+                                                borderRadius: 9999,
+                                                background: "#2563eb",
+                                                color: "#fff",
+                                                fontSize: 10,
+                                                fontWeight: 600,
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                padding: "0 4px",
+                                                lineHeight: 1,
+                                            }}
+                                        >
+                                            {itemCount > 99 ? "99+" : itemCount}
+                                        </span>
+                                    )}
                                 </Link>
 
                                 <div style={{ position: "relative", marginLeft: 4 }} ref={userMenuRef}>
@@ -233,7 +267,14 @@ export function Navbar() {
                             <Link href="/products" style={{ display: "block", padding: "10px 12px", fontSize: 14, color: "#4b5563", borderRadius: 8, textDecoration: "none" }} onClick={() => setMobileMenuOpen(false)}>Products</Link>
                             {isAuthenticated ? (
                                 <>
-                                    <Link href="/cart" style={{ display: "block", padding: "10px 12px", fontSize: 14, color: "#4b5563", borderRadius: 8, textDecoration: "none" }} onClick={() => setMobileMenuOpen(false)}>Cart</Link>
+                                    <Link href="/cart" style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 12px", fontSize: 14, color: "#4b5563", borderRadius: 8, textDecoration: "none" }} onClick={() => setMobileMenuOpen(false)}>
+                                        Cart
+                                        {itemCount > 0 && (
+                                            <span style={{ minWidth: 18, height: 18, borderRadius: 9999, background: "#2563eb", color: "#fff", fontSize: 11, fontWeight: 600, display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "0 5px" }}>
+                                                {itemCount > 99 ? "99+" : itemCount}
+                                            </span>
+                                        )}
+                                    </Link>
                                     <Link href={dashboardPath} style={{ display: "block", padding: "10px 12px", fontSize: 14, color: "#4b5563", borderRadius: 8, textDecoration: "none" }} onClick={() => setMobileMenuOpen(false)}>Dashboard</Link>
                                     <button onClick={() => { logout(); setMobileMenuOpen(false); }} style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 12px", fontSize: 14, color: "#ef4444", borderRadius: 8, border: "none", background: "transparent", cursor: "pointer" }}>Log out</button>
                                 </>

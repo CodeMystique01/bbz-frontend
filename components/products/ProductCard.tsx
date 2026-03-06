@@ -1,8 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { Heart, Star, ShoppingCart } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Heart, Star, ShoppingCart, Loader2 } from "lucide-react";
 import { cn, formatPrice, truncate } from "@/lib/utils";
+import { useCartStore } from "@/store/cart-store";
+import { useAuthStore } from "@/store/auth-store";
+import { toast } from "sonner";
 
 interface ProductCardProps {
     id: string;
@@ -18,6 +23,26 @@ interface ProductCardProps {
 export function ProductCard({
     id, name, description, price, imageUrl, category, averageRating, vendorName,
 }: ProductCardProps) {
+    const router = useRouter();
+    const { addItem } = useCartStore();
+    const { isAuthenticated } = useAuthStore();
+    const [addingToCart, setAddingToCart] = useState(false);
+
+    async function handleAddToCart(e: React.MouseEvent) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!isAuthenticated) { router.push("/login"); return; }
+        setAddingToCart(true);
+        try {
+            await addItem(id);
+            toast.success("Added to cart!");
+        } catch {
+            toast.error("Failed to add to cart");
+        } finally {
+            setAddingToCart(false);
+        }
+    }
+
     return (
         <Link href={`/products/${id}`} className="group block bg-white rounded-xl border border-gray-100 overflow-hidden hover:border-gray-200 hover:shadow-sm transition-all duration-200">
             <div className="relative aspect-[4/3] bg-gray-50 overflow-hidden">
@@ -50,9 +75,14 @@ export function ProductCard({
                                 <span>{averageRating.toFixed(1)}</span>
                             </div>
                         )}
-                        <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                            className="p-1.5 rounded-md bg-gray-50 text-gray-400 hover:bg-primary-50 hover:text-primary-600 transition-colors cursor-pointer">
-                            <ShoppingCart className="h-3.5 w-3.5" />
+                        <button
+                            onClick={handleAddToCart}
+                            disabled={addingToCart}
+                            className="p-1.5 rounded-md bg-gray-50 text-gray-400 hover:bg-primary-50 hover:text-primary-600 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {addingToCart
+                                ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                : <ShoppingCart className="h-3.5 w-3.5" />}
                         </button>
                     </div>
                 </div>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, ShoppingCart, Heart, Star, Package, User } from "lucide-react";
+import { ArrowLeft, ShoppingCart, Heart, Star, Package, User, Minus, Plus } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
 import type { Product, Review } from "@/lib/types";
 import { useCartStore } from "@/store/cart-store";
@@ -21,6 +21,7 @@ export default function ProductDetailPage() {
     const [product, setProduct] = useState<Product | null>(null);
     const [reviews, setReviews] = useState<Review[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [quantity, setQuantity] = useState(1);
     const [addingToCart, setAddingToCart] = useState(false);
     const [wishlisted, setWishlisted] = useState(false);
 
@@ -59,8 +60,9 @@ export default function ProductDetailPage() {
         if (!isAuthenticated) { router.push("/login"); return; }
         setAddingToCart(true);
         try {
-            await addItem(productId);
-            toast.success("Added to cart!");
+            await addItem(productId, quantity);
+            toast.success(`Added ${quantity > 1 ? `${quantity} items` : ""} to cart!`);
+            setQuantity(1);
         } catch {
             toast.error("Failed to add to cart");
         } finally {
@@ -192,6 +194,26 @@ export default function ProductDetailPage() {
                                 <Badge variant={product.approvalStatus === "APPROVED" ? "success" : "warning"}>
                                     {product.approvalStatus}
                                 </Badge>
+                            </div>
+
+                            <div className="flex items-center gap-3 mb-3">
+                                <span className="text-sm text-gray-500">Quantity</span>
+                                <div className="flex items-center gap-2 bg-gray-50 rounded-lg border border-gray-100">
+                                    <button
+                                        onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                                        disabled={quantity <= 1}
+                                        className="p-2 text-gray-400 hover:text-gray-700 disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed"
+                                    >
+                                        <Minus className="h-3.5 w-3.5" />
+                                    </button>
+                                    <span className="text-sm font-medium text-gray-900 w-8 text-center">{quantity}</span>
+                                    <button
+                                        onClick={() => setQuantity(q => q + 1)}
+                                        className="p-2 text-gray-400 hover:text-gray-700 cursor-pointer"
+                                    >
+                                        <Plus className="h-3.5 w-3.5" />
+                                    </button>
+                                </div>
                             </div>
 
                             <Button onClick={handleAddToCart} disabled={addingToCart} className="w-full" size="lg">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Trash2, Minus, Plus, ShoppingBag, ArrowRight } from "lucide-react";
@@ -10,17 +10,63 @@ import { Navbar } from "@/components/layout";
 import { Footer } from "@/components/layout/Footer";
 import { Button, Spinner } from "@/components/ui";
 import { formatPrice } from "@/lib/utils";
+import { toast } from "sonner";
 
 export default function CartPage() {
     const router = useRouter();
     const { items, isLoading, itemCount, total, fetchCart, updateQuantity, removeItem, clearCart } =
         useCartStore();
     const { isAuthenticated } = useAuthStore();
+    const [confirmingClear, setConfirmingClear] = useState(false);
+    const [busyItems, setBusyItems] = useState<Set<string>>(new Set());
+    const debounceTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
     useEffect(() => {
         if (!isAuthenticated) { router.push("/login"); return; }
         fetchCart();
     }, [isAuthenticated, router, fetchCart]);
+
+    const debouncedUpdateQuantity = useCallback((productId: string, quantity: number) => {
+        const existing = debounceTimers.current.get(productId);
+        if (existing) clearTimeout(existing);
+
+        debounceTimers.current.set(productId, setTimeout(async () => {
+            debounceTimers.current.delete(productId);
+            setBusyItems(prev => new Set(prev).add(productId));
+            try {
+                await updateQuantity(productId, quantity);
+            } catch {
+                toast.error("Failed to update quantity");
+            } finally {
+                setBusyItems(prev => { const next = new Set(prev); next.delete(productId); return next; });
+            }
+        }, 400));
+    }, [updateQuantity]);
+
+    async function handleRemoveItem(productId: string) {
+        setBusyItems(prev => new Set(prev).add(productId));
+        try {
+            await removeItem(productId);
+        } catch {
+            toast.error("Failed to remove item");
+        } finally {
+            setBusyItems(prev => { const next = new Set(prev); next.delete(productId); return next; });
+        }
+    }
+
+    async function handleClearCart() {
+        if (!confirmingClear) {
+            setConfirmingClear(true);
+            setTimeout(() => setConfirmingClear(false), 3000);
+            return;
+        }
+        setConfirmingClear(false);
+        try {
+            await clearCart();
+        } catch {
+            toast.error("Failed to clear cart");
+        }
+    }
 
     if (!isAuthenticated) return null;
 
@@ -35,8 +81,11 @@ export default function CartPage() {
                         <p className="text-xs text-gray-400 mt-0.5">{itemCount} {itemCount === 1 ? "item" : "items"}</p>
                     </div>
                     {items.length > 0 && (
-                        <button onClick={clearCart} className="text-xs text-gray-400 hover:text-red-500 transition-colors cursor-pointer">
-                            Clear Cart
+                        <button
+                            onClick={handleClearCart}
+                            className={`text-xs transition-colors cursor-pointer ${confirmingClear ? "text-red-500 font-medium" : "text-gray-400 hover:text-red-500"}`}
+                        >
+                            {confirmingClear ? "Click again to confirm" : "Clear Cart"}
                         </button>
                     )}
                 </div>
@@ -53,45 +102,48 @@ export default function CartPage() {
                 ) : (
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-2 space-y-3">
-                            {items.map((item) => (
-                                <div key={item.id} className="rounded-xl border border-gray-100 p-4 flex gap-4 hover:border-gray-200 transition-colors">
-                                    <Link href={`/products/${item.productId}`} className="shrink-0">
-                                        <div className="w-20 h-20 rounded-lg bg-gray-50 overflow-hidden">
-                                            <img
-                                                src={item.product.imageUrl || "/placeholder-product.png"}
-                                                alt={item.product.name}
-                                                className="w-full h-full object-cover"
-                                                onError={(e) => {
-                                                    (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect fill='%23fafafa' width='200' height='200'/%3E%3Ctext fill='%23d4d4d8' font-family='sans-serif' font-size='11' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3ENo Image%3C/text%3E%3C/svg%3E";
-                                                }}
-                                            />
-                                        </div>
-                                    </Link>
-                                    <div className="flex-1 min-w-0">
-                                        <Link href={`/products/${item.productId}`}>
-                                            <h3 className="text-sm font-medium text-gray-900 hover:text-primary-600 transition-colors line-clamp-1">{item.product.name}</h3>
+                            {items.map((item) => {
+                                const isBusy = busyItems.has(item.productId);
+                                return (
+                                    <div key={item.id} className={`rounded-xl border border-gray-100 p-4 flex gap-4 hover:border-gray-200 transition-colors ${isBusy ? "opacity-60 pointer-events-none" : ""}`}>
+                                        <Link href={`/products/${item.productId}`} className="shrink-0">
+                                            <div className="w-20 h-20 rounded-lg bg-gray-50 overflow-hidden">
+                                                <img
+                                                    src={item.product.imageUrl || "/placeholder-product.png"}
+                                                    alt={item.product.name}
+                                                    className="w-full h-full object-cover"
+                                                    onError={(e) => {
+                                                        (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect fill='%23fafafa' width='200' height='200'/%3E%3Ctext fill='%23d4d4d8' font-family='sans-serif' font-size='11' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3ENo Image%3C/text%3E%3C/svg%3E";
+                                                    }}
+                                                />
+                                            </div>
                                         </Link>
-                                        {item.product.category && <p className="text-[11px] text-gray-300 mt-0.5">{item.product.category}</p>}
-                                        <p className="text-base font-semibold text-gray-900 mt-1.5">{formatPrice(item.product.price)}</p>
-                                    </div>
-                                    <div className="flex flex-col items-end justify-between">
-                                        <button onClick={() => removeItem(item.productId)} className="p-1 text-gray-300 hover:text-red-400 transition-colors cursor-pointer">
-                                            <Trash2 className="h-3.5 w-3.5" />
-                                        </button>
-                                        <div className="flex items-center gap-1.5 bg-gray-50 rounded-md">
-                                            <button onClick={() => updateQuantity(item.productId, Math.max(1, item.quantity - 1))} disabled={item.quantity <= 1}
-                                                className="p-1.5 text-gray-400 hover:text-gray-700 disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed">
-                                                <Minus className="h-3 w-3" />
+                                        <div className="flex-1 min-w-0">
+                                            <Link href={`/products/${item.productId}`}>
+                                                <h3 className="text-sm font-medium text-gray-900 hover:text-primary-600 transition-colors line-clamp-1">{item.product.name}</h3>
+                                            </Link>
+                                            {item.product.category && <p className="text-[11px] text-gray-300 mt-0.5">{item.product.category}</p>}
+                                            <p className="text-base font-semibold text-gray-900 mt-1.5">{formatPrice(item.product.price)}</p>
+                                        </div>
+                                        <div className="flex flex-col items-end justify-between">
+                                            <button onClick={() => handleRemoveItem(item.productId)} className="p-1 text-gray-300 hover:text-red-400 transition-colors cursor-pointer">
+                                                <Trash2 className="h-3.5 w-3.5" />
                                             </button>
-                                            <span className="text-xs font-medium text-gray-900 w-5 text-center">{item.quantity}</span>
-                                            <button onClick={() => updateQuantity(item.productId, item.quantity + 1)}
-                                                className="p-1.5 text-gray-400 hover:text-gray-700 cursor-pointer">
-                                                <Plus className="h-3 w-3" />
-                                            </button>
+                                            <div className="flex items-center gap-1.5 bg-gray-50 rounded-md">
+                                                <button onClick={() => debouncedUpdateQuantity(item.productId, Math.max(1, item.quantity - 1))} disabled={item.quantity <= 1}
+                                                    className="p-1.5 text-gray-400 hover:text-gray-700 disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed">
+                                                    <Minus className="h-3 w-3" />
+                                                </button>
+                                                <span className="text-xs font-medium text-gray-900 w-5 text-center">{item.quantity}</span>
+                                                <button onClick={() => debouncedUpdateQuantity(item.productId, item.quantity + 1)}
+                                                    className="p-1.5 text-gray-400 hover:text-gray-700 cursor-pointer">
+                                                    <Plus className="h-3 w-3" />
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
 
                         <div className="lg:col-span-1">
