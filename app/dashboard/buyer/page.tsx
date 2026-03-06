@@ -7,6 +7,7 @@ import { apiClient } from "@/lib/api-client";
 import type { BuyerDashboard } from "@/lib/types";
 import { Spinner, Badge } from "@/components/ui";
 import { formatPrice, formatDate } from "@/lib/utils";
+import { toast } from "sonner";
 
 const STATUS_COLORS: Record<string, "success" | "warning" | "error" | "default"> = {
     CONFIRMED: "success", DELIVERED: "success",
@@ -24,7 +25,7 @@ export default function BuyerDashboardPage() {
         try {
             const res = await apiClient.get<BuyerDashboard>("/api/dashboard/buyer");
             setData(res);
-        } catch { /* ignore */ } finally { setIsLoading(false); }
+        } catch { toast.error("Failed to load dashboard"); } finally { setIsLoading(false); }
     }
 
     if (isLoading) return <div className="flex justify-center py-24"><Spinner size="lg" /></div>;

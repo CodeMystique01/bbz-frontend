@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight, Shield, Zap, CreditCard, Star, Package, Users, TrendingUp,
@@ -6,6 +9,8 @@ import {
 } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { apiClient } from "@/lib/api-client";
+import type { Product, ProductListResponse } from "@/lib/types";
 
 /* ── Shared container style ─────────────────────────────── */
 const container: React.CSSProperties = {
@@ -16,7 +21,7 @@ const container: React.CSSProperties = {
   paddingRight: 24,
 };
 
-/* ── Data ────────────────────────────────────────────────── */
+/* ── Static Data (marketing / UI config) ─────────────────── */
 const CATEGORIES = [
   { name: "Software", icon: Code, bg: "#eff6ff", fg: "#2563eb", border: "#dbeafe" },
   { name: "Templates", icon: Layers, bg: "#faf5ff", fg: "#9333ea", border: "#f3e8ff" },
@@ -26,15 +31,6 @@ const CATEGORIES = [
   { name: "E-books", icon: BookOpen, bg: "#ecfdf5", fg: "#059669", border: "#d1fae5" },
   { name: "Courses", icon: FileText, bg: "#ecfeff", fg: "#0891b2", border: "#cffafe" },
   { name: "Fonts", icon: Type, bg: "#fff7ed", fg: "#ea580c", border: "#ffedd5" },
-];
-
-const FEATURED = [
-  { id: 1, name: "SaaS Landing Page Kit", price: 1999, was: 4999, cat: "Templates", rating: 4.8, reviews: 124, emoji: "🎨" },
-  { id: 2, name: "Invoice & Billing Automation", price: 2499, was: 7999, cat: "Software", rating: 4.9, reviews: 89, emoji: "📊" },
-  { id: 3, name: "Social Media Graphics Pack", price: 999, was: 2999, cat: "Graphics", rating: 4.7, reviews: 213, emoji: "✨" },
-  { id: 4, name: "Complete React UI Library", price: 3499, was: 9999, cat: "Software", rating: 4.9, reviews: 156, emoji: "⚛️" },
-  { id: 5, name: "Background Music Bundle", price: 1499, was: 4499, cat: "Audio", rating: 4.6, reviews: 78, emoji: "🎵" },
-  { id: 6, name: "SEO Mastery Course", price: 1999, was: 5999, cat: "Courses", rating: 4.8, reviews: 342, emoji: "📈" },
 ];
 
 const REVIEWS = [
@@ -48,6 +44,32 @@ function inr(n: number) {
 }
 
 export default function HomePage() {
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+
+  useEffect(() => {
+    async function fetchLandingData() {
+      try {
+        const res = await apiClient.get<ProductListResponse | Product[]>(
+          "/api/products?limit=6&sortOption=rating"
+        );
+        if (Array.isArray(res)) {
+          setFeaturedProducts(res);
+          setTotalProducts(res.length);
+        } else {
+          setFeaturedProducts(res.products);
+          setTotalProducts(res.total);
+        }
+      } catch {
+        // Silently fail — landing page still renders with empty featured section
+      } finally {
+        setIsLoadingProducts(false);
+      }
+    }
+    fetchLandingData();
+  }, []);
+
   return (
     <div style={{ minHeight: "100vh", background: "#ffffff" }}>
       <Navbar />
@@ -128,7 +150,7 @@ export default function HomePage() {
             >
               <Search style={{ width: 18, height: 18, color: "#9ca3af", marginRight: 12, flexShrink: 0 }} />
               <span style={{ color: "#9ca3af", fontSize: 14, flex: 1, textAlign: "left" }}>
-                Search 1,000+ digital products...
+                {totalProducts > 0 ? `Search ${totalProducts.toLocaleString("en-IN")}+ digital products...` : "Search digital products..."}
               </span>
               <span
                 style={{
@@ -178,7 +200,7 @@ export default function HomePage() {
         <div style={{ ...container }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
             {[
-              { label: "Digital Products", value: "1,000+", icon: Package },
+              { label: "Digital Products", value: totalProducts > 0 ? `${totalProducts.toLocaleString("en-IN")}+` : "—", icon: Package },
               { label: "Active Vendors", value: "200+", icon: Users },
               { label: "Happy Buyers", value: "5,000+", icon: Star },
               { label: "Total Transactions", value: "₹10L+", icon: TrendingUp },
@@ -250,7 +272,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══════════════════ DEALS ═══════════════════ */}
+      {/* ═══════════════════ TOP PRODUCTS ═══════════════════ */}
       <section style={{ padding: "64px 0", background: "#f9fafb" }}>
         <div style={{ ...container }}>
           <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 32 }}>
@@ -260,30 +282,47 @@ export default function HomePage() {
                   display: "inline-block",
                   padding: "4px 12px",
                   borderRadius: 20,
-                  background: "#fef2f2",
-                  color: "#dc2626",
+                  background: "#eff6ff",
+                  color: "#2563eb",
                   fontSize: 12,
                   fontWeight: 600,
                   marginBottom: 10,
                 }}
               >
-                🔥 Hot Deals
+                ⭐ Top Rated
               </span>
-              <h2 style={{ fontSize: 26, fontWeight: 700, color: "#111827", margin: 0 }}>Today&apos;s Best Deals</h2>
-              <p style={{ marginTop: 6, fontSize: 14, color: "#9ca3af" }}>Handpicked products at incredible prices</p>
+              <h2 style={{ fontSize: 26, fontWeight: 700, color: "#111827", margin: 0 }}>Popular Products</h2>
+              <p style={{ marginTop: 6, fontSize: 14, color: "#9ca3af" }}>Highest rated products from verified vendors</p>
             </div>
             <Link href="/products" style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 14, color: "#2563eb", fontWeight: 500, textDecoration: "none" }}>
-              See All Deals <ChevronRight style={{ width: 16, height: 16 }} />
+              View All <ChevronRight style={{ width: 16, height: 16 }} />
             </Link>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
-            {FEATURED.map((p) => {
-              const off = Math.round(((p.was - p.price) / p.was) * 100);
-              return (
+          {isLoadingProducts ? (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
+              {Array.from({ length: 6 }, (_, i) => (
+                <div key={i} style={{ background: "#ffffff", borderRadius: 14, border: "1px solid #e5e7eb", overflow: "hidden" }}>
+                  <div style={{ height: 160, background: "linear-gradient(135deg, #f3f4f6, #e5e7eb)" }} />
+                  <div style={{ padding: 20 }}>
+                    <div style={{ height: 16, width: "70%", background: "#f3f4f6", borderRadius: 8, marginBottom: 10 }} />
+                    <div style={{ height: 12, width: "40%", background: "#f3f4f6", borderRadius: 6, marginBottom: 12 }} />
+                    <div style={{ height: 20, width: "30%", background: "#f3f4f6", borderRadius: 8 }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : featuredProducts.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "48px 0", color: "#9ca3af", fontSize: 14 }}>
+              <Package style={{ width: 32, height: 32, color: "#e5e7eb", margin: "0 auto 12px" }} />
+              <p>Products coming soon — check back later!</p>
+            </div>
+          ) : (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
+              {featuredProducts.map((p) => (
                 <Link
                   key={p.id}
-                  href="/products"
+                  href={`/products/${p.id}`}
                   style={{
                     display: "block",
                     background: "#ffffff",
@@ -303,40 +342,36 @@ export default function HomePage() {
                       alignItems: "center",
                       justifyContent: "center",
                       position: "relative",
+                      overflow: "hidden",
                     }}
                   >
-                    <span style={{ fontSize: 48 }}>{p.emoji}</span>
-                    <span
-                      style={{
-                        position: "absolute",
-                        top: 12,
-                        left: 12,
-                        padding: "3px 8px",
-                        borderRadius: 6,
-                        background: "#dc2626",
-                        color: "#fff",
-                        fontSize: 10,
-                        fontWeight: 700,
-                        letterSpacing: "0.04em",
-                      }}
-                    >
-                      {off}% OFF
-                    </span>
-                    <span
-                      style={{
-                        position: "absolute",
-                        top: 12,
-                        right: 12,
-                        padding: "3px 8px",
-                        borderRadius: 6,
-                        background: "rgba(255,255,255,0.9)",
-                        color: "#6b7280",
-                        fontSize: 10,
-                        fontWeight: 500,
-                      }}
-                    >
-                      {p.cat}
-                    </span>
+                    {p.imageUrl ? (
+                      <img
+                        src={p.imageUrl}
+                        alt={p.name}
+                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                      />
+                    ) : (
+                      <Package style={{ width: 32, height: 32, color: "#d1d5db" }} />
+                    )}
+                    {p.category && (
+                      <span
+                        style={{
+                          position: "absolute",
+                          top: 12,
+                          right: 12,
+                          padding: "3px 8px",
+                          borderRadius: 6,
+                          background: "rgba(255,255,255,0.9)",
+                          color: "#6b7280",
+                          fontSize: 10,
+                          fontWeight: 500,
+                        }}
+                      >
+                        {p.category}
+                      </span>
+                    )}
                   </div>
 
                   {/* Info */}
@@ -362,24 +397,32 @@ export default function HomePage() {
                             style={{
                               width: 12,
                               height: 12,
-                              fill: i < Math.round(p.rating) ? "#fbbf24" : "none",
-                              color: i < Math.round(p.rating) ? "#fbbf24" : "#e5e7eb",
+                              fill: i < Math.round(p.averageRating || 0) ? "#fbbf24" : "none",
+                              color: i < Math.round(p.averageRating || 0) ? "#fbbf24" : "#e5e7eb",
                             }}
                           />
                         ))}
                       </div>
-                      <span style={{ fontSize: 12, color: "#6b7280" }}>{p.rating}</span>
-                      <span style={{ fontSize: 12, color: "#d1d5db" }}>({p.reviews})</span>
+                      {p.averageRating != null && (
+                        <span style={{ fontSize: 12, color: "#6b7280" }}>{p.averageRating.toFixed(1)}</span>
+                      )}
+                      {p.totalReviews != null && p.totalReviews > 0 && (
+                        <span style={{ fontSize: 12, color: "#d1d5db" }}>({p.totalReviews})</span>
+                      )}
                     </div>
                     <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginTop: 12 }}>
                       <span style={{ fontSize: 20, fontWeight: 700, color: "#111827" }}>{inr(p.price)}</span>
-                      <span style={{ fontSize: 13, color: "#9ca3af", textDecoration: "line-through" }}>{inr(p.was)}</span>
                     </div>
+                    {p.vendor && (
+                      <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 6 }}>
+                        by {p.vendor.name || p.vendor.email}
+                      </div>
+                    )}
                   </div>
                 </Link>
-              );
-            })}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

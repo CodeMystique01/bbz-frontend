@@ -69,11 +69,13 @@ export default function BuyerMessagesPage() {
     }
 
     return (
-        <div className="animate-fade-in">
-            <h1 className="text-2xl font-bold text-gray-900 mb-1">Messages</h1>
-            <p className="text-sm text-gray-500 mb-6">Communicate with vendors</p>
+        <div className="space-y-6 animate-fade-in">
+            <div>
+                <h1 className="text-xl font-semibold text-gray-900">Messages</h1>
+                <p className="text-xs text-gray-400 mt-0.5">Communicate with vendors</p>
+            </div>
 
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden" style={{ height: "calc(100vh - 240px)" }}>
+            <div className="rounded-xl border border-gray-100 overflow-hidden" style={{ height: "calc(100vh - 240px)" }}>
                 <div className="flex h-full">
                     {/* Thread List */}
                     <div className={`w-80 border-r border-gray-100 flex flex-col ${selectedThread ? "hidden lg:flex" : "flex"}`}>
@@ -120,8 +122,8 @@ export default function BuyerMessagesPage() {
                                     {messages.map((msg) => (
                                         <div key={msg.id} className={`flex ${msg.senderId === user?.id ? "justify-end" : "justify-start"}`}>
                                             <div className={`max-w-[70%] px-4 py-2.5 rounded-2xl text-sm ${msg.senderId === user?.id
-                                                    ? "bg-primary-600 text-white rounded-br-md"
-                                                    : "bg-gray-100 text-gray-900 rounded-bl-md"
+                                                ? "bg-primary-600 text-white rounded-br-md"
+                                                : "bg-gray-100 text-gray-900 rounded-bl-md"
                                                 }`}>
                                                 <p>{msg.content}</p>
                                                 <p className={`text-[10px] mt-1 ${msg.senderId === user?.id ? "text-primary-200" : "text-gray-400"}`}>

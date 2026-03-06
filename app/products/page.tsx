@@ -102,25 +102,48 @@ export default function ProductsPage() {
             <Navbar />
 
             {/* Search Header */}
-            <div className="border-b border-gray-100 bg-gray-50/50">
-                <div style={{ maxWidth: 1100, marginLeft: "auto", marginRight: "auto", paddingLeft: 24, paddingRight: 24, paddingTop: 32, paddingBottom: 32 }}>
-                    <h1 className="text-2xl font-bold text-gray-900 mb-1">Products</h1>
-                    <p className="text-sm text-gray-400 mb-5">Discover premium digital products from verified vendors</p>
+            <div style={{ borderBottom: "1px solid #f3f4f6" }}>
+                <div style={{ maxWidth: 1100, marginLeft: "auto", marginRight: "auto", paddingLeft: 24, paddingRight: 24, paddingTop: 40, paddingBottom: 40 }}>
+                    <h1 style={{ fontSize: 20, fontWeight: 600, color: "#111827", marginBottom: 4 }}>Products</h1>
+                    <p style={{ fontSize: 13, color: "#9ca3af", marginBottom: 20 }}>Discover premium digital products from verified vendors</p>
 
-                    <form onSubmit={handleSearch} className="flex max-w-lg">
-                        <div className="relative flex-1">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-300" />
+                    <form onSubmit={handleSearch} style={{ display: "flex", maxWidth: 520 }}>
+                        <div style={{ position: "relative", flex: 1 }}>
+                            <Search style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", height: 16, width: 16, color: "#d1d5db" }} />
                             <input
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Search products..."
-                                className="w-full pl-10 pr-4 py-2.5 rounded-l-lg bg-white border border-gray-200 text-sm text-gray-900 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:border-primary-300"
+                                style={{
+                                    width: "100%",
+                                    paddingLeft: 40,
+                                    paddingRight: 16,
+                                    paddingTop: 10,
+                                    paddingBottom: 10,
+                                    borderRadius: "10px 0 0 10px",
+                                    border: "1px solid #e5e7eb",
+                                    borderRight: "none",
+                                    fontSize: 14,
+                                    color: "#111827",
+                                    outline: "none",
+                                    background: "#fff",
+                                }}
                             />
                         </div>
                         <button
                             type="submit"
-                            className="px-5 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-r-lg transition-colors text-sm font-medium cursor-pointer"
+                            style={{
+                                padding: "10px 24px",
+                                background: "#111827",
+                                color: "#fff",
+                                borderRadius: "0 10px 10px 0",
+                                border: "none",
+                                fontSize: 13,
+                                fontWeight: 500,
+                                cursor: "pointer",
+                                whiteSpace: "nowrap",
+                            }}
                         >
                             Search
                         </button>
@@ -129,30 +152,50 @@ export default function ProductsPage() {
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 w-full" style={{ maxWidth: 1100, marginLeft: "auto", marginRight: "auto", paddingLeft: 24, paddingRight: 24, paddingTop: 24, paddingBottom: 24 }}>
+            <div style={{ flex: 1, maxWidth: 1100, marginLeft: "auto", marginRight: "auto", paddingLeft: 24, paddingRight: 24, paddingTop: 24, paddingBottom: 48, width: "100%" }}>
                 {/* Toolbar */}
-                <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-                    <div className="flex items-center gap-3">
-                        <p className="text-xs text-gray-400">
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                        <p style={{ fontSize: 12, color: "#9ca3af" }}>
                             {isLoading ? "Loading..." : `${total} products`}
                         </p>
                         {hasActiveFilters && (
-                            <button onClick={clearFilters} className="text-xs text-primary-600 hover:text-primary-700 flex items-center gap-1 cursor-pointer">
-                                <X className="h-3 w-3" /> Clear
+                            <button onClick={clearFilters} style={{ fontSize: 12, color: "#2563eb", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, background: "none", border: "none" }}>
+                                <X style={{ height: 12, width: 12 }} /> Clear
                             </button>
                         )}
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                         <button
                             onClick={() => setShowFilters(!showFilters)}
-                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors cursor-pointer ${showFilters ? "bg-primary-50 border-primary-100 text-primary-600" : "bg-white border-gray-200 text-gray-500 hover:bg-gray-50"}`}
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 6,
+                                padding: "6px 12px",
+                                borderRadius: 8,
+                                border: showFilters ? "1px solid #dbeafe" : "1px solid #e5e7eb",
+                                background: showFilters ? "#eff6ff" : "#fff",
+                                color: showFilters ? "#2563eb" : "#6b7280",
+                                fontSize: 12,
+                                fontWeight: 500,
+                                cursor: "pointer",
+                            }}
                         >
-                            <SlidersHorizontal className="h-3.5 w-3.5" /> Filters
+                            <SlidersHorizontal style={{ height: 14, width: 14 }} /> Filters
                         </button>
                         <select
                             value={sortOption}
                             onChange={(e) => { setSortOption(e.target.value); setPage(1); }}
-                            className="px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-xs text-gray-500 focus:outline-none"
+                            style={{
+                                padding: "6px 12px",
+                                borderRadius: 8,
+                                border: "1px solid #e5e7eb",
+                                background: "#fff",
+                                fontSize: 12,
+                                color: "#6b7280",
+                                outline: "none",
+                            }}
                         >
                             {SORT_OPTIONS.map((opt) => (
                                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -161,20 +204,20 @@ export default function ProductsPage() {
                     </div>
                 </div>
 
-                <div className="flex gap-8">
+                <div style={{ display: "flex", gap: 32 }}>
                     {/* Filter Panel */}
                     {showFilters && (
-                        <aside className="w-52 shrink-0 space-y-5">
-                            <div className="bg-white rounded-lg border border-gray-100 p-4">
-                                <h3 className="text-xs font-semibold text-gray-900 mb-3">Categories</h3>
-                                <div className="space-y-2">
+                        <aside style={{ width: 200, flexShrink: 0 }}>
+                            <div style={{ borderRadius: 12, border: "1px solid #f3f4f6", padding: 16, marginBottom: 12 }}>
+                                <h3 style={{ fontSize: 11, fontWeight: 600, color: "#111827", marginBottom: 12, textTransform: "uppercase", letterSpacing: "0.05em" }}>Categories</h3>
+                                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                                     {CATEGORIES.map((cat) => (
-                                        <label key={cat} className="flex items-center gap-2 text-xs text-gray-500 cursor-pointer">
+                                        <label key={cat} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "#6b7280", cursor: "pointer" }}>
                                             <input
                                                 type="checkbox"
                                                 checked={selectedCategories.includes(cat)}
                                                 onChange={() => toggleCategory(cat)}
-                                                className="rounded border-gray-200 text-primary-600 focus:ring-primary-500"
+                                                style={{ borderRadius: 4 }}
                                             />
                                             {cat}
                                         </label>
@@ -182,16 +225,16 @@ export default function ProductsPage() {
                                 </div>
                             </div>
 
-                            <div className="bg-white rounded-lg border border-gray-100 p-4">
-                                <h3 className="text-xs font-semibold text-gray-900 mb-3">Price Range</h3>
-                                <div className="flex gap-2">
+                            <div style={{ borderRadius: 12, border: "1px solid #f3f4f6", padding: 16 }}>
+                                <h3 style={{ fontSize: 11, fontWeight: 600, color: "#111827", marginBottom: 12, textTransform: "uppercase", letterSpacing: "0.05em" }}>Price Range</h3>
+                                <div style={{ display: "flex", gap: 8 }}>
                                     <input type="number" value={minPrice} onChange={(e) => setMinPrice(e.target.value)}
-                                        placeholder="Min" className="w-full px-2.5 py-1.5 rounded-md border border-gray-200 text-xs focus:outline-none focus:ring-1 focus:ring-primary-200" />
+                                        placeholder="Min" style={{ width: "100%", padding: "6px 10px", borderRadius: 6, border: "1px solid #e5e7eb", fontSize: 12, outline: "none" }} />
                                     <input type="number" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)}
-                                        placeholder="Max" className="w-full px-2.5 py-1.5 rounded-md border border-gray-200 text-xs focus:outline-none focus:ring-1 focus:ring-primary-200" />
+                                        placeholder="Max" style={{ width: "100%", padding: "6px 10px", borderRadius: 6, border: "1px solid #e5e7eb", fontSize: 12, outline: "none" }} />
                                 </div>
                                 <button onClick={() => { setPage(1); fetchProducts(); }}
-                                    className="w-full mt-2.5 px-3 py-1.5 bg-gray-50 text-gray-600 rounded-md text-xs font-medium hover:bg-gray-100 transition-colors cursor-pointer">
+                                    style={{ width: "100%", marginTop: 10, padding: "6px 12px", background: "#f9fafb", color: "#4b5563", borderRadius: 6, fontSize: 12, fontWeight: 500, border: "1px solid #f3f4f6", cursor: "pointer" }}>
                                     Apply
                                 </button>
                             </div>
@@ -199,16 +242,16 @@ export default function ProductsPage() {
                     )}
 
                     {/* Product Grid */}
-                    <div className="flex-1">
+                    <div style={{ flex: 1, minWidth: 0 }}>
                         {isLoading ? (
-                            <div className="flex justify-center items-center py-24">
+                            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "96px 0" }}>
                                 <Spinner size="lg" />
                             </div>
                         ) : products.length === 0 ? (
-                            <div className="text-center py-24">
-                                <Search className="h-8 w-8 text-gray-200 mx-auto mb-3" />
-                                <h3 className="text-base font-medium text-gray-900 mb-1">No products found</h3>
-                                <p className="text-sm text-gray-400">Try adjusting your search or filters</p>
+                            <div style={{ textAlign: "center", padding: "96px 0" }}>
+                                <Search style={{ height: 32, width: 32, color: "#e5e7eb", margin: "0 auto 12px" }} />
+                                <h3 style={{ fontSize: 15, fontWeight: 500, color: "#111827", marginBottom: 4 }}>No products found</h3>
+                                <p style={{ fontSize: 13, color: "#9ca3af" }}>Try adjusting your search or filters</p>
                             </div>
                         ) : (
                             <>
@@ -229,13 +272,13 @@ export default function ProductsPage() {
                                 </div>
 
                                 {totalPages > 1 && (
-                                    <div className="flex items-center justify-center gap-1.5 mt-10">
+                                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 40 }}>
                                         <button
                                             onClick={() => setPage((p) => Math.max(1, p - 1))}
                                             disabled={page === 1}
-                                            className="p-2 rounded-lg border border-gray-100 text-gray-400 hover:bg-gray-50 disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed"
+                                            style={{ padding: 8, borderRadius: 8, border: "1px solid #f3f4f6", color: "#9ca3af", cursor: page === 1 ? "not-allowed" : "pointer", opacity: page === 1 ? 0.3 : 1, background: "transparent" }}
                                         >
-                                            <ChevronLeft className="h-4 w-4" />
+                                            <ChevronLeft style={{ height: 16, width: 16 }} />
                                         </button>
                                         {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                                             const pageNum = Math.max(1, Math.min(page - 2, totalPages - 4)) + i;
@@ -244,10 +287,16 @@ export default function ProductsPage() {
                                                 <button
                                                     key={pageNum}
                                                     onClick={() => setPage(pageNum)}
-                                                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${pageNum === page
-                                                        ? "bg-gray-900 text-white"
-                                                        : "text-gray-400 hover:bg-gray-50"
-                                                        }`}
+                                                    style={{
+                                                        padding: "6px 12px",
+                                                        borderRadius: 8,
+                                                        fontSize: 12,
+                                                        fontWeight: 500,
+                                                        cursor: "pointer",
+                                                        background: pageNum === page ? "#111827" : "transparent",
+                                                        color: pageNum === page ? "#fff" : "#9ca3af",
+                                                        border: "none",
+                                                    }}
                                                 >
                                                     {pageNum}
                                                 </button>
@@ -256,9 +305,9 @@ export default function ProductsPage() {
                                         <button
                                             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                                             disabled={page === totalPages}
-                                            className="p-2 rounded-lg border border-gray-100 text-gray-400 hover:bg-gray-50 disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed"
+                                            style={{ padding: 8, borderRadius: 8, border: "1px solid #f3f4f6", color: "#9ca3af", cursor: page === totalPages ? "not-allowed" : "pointer", opacity: page === totalPages ? 0.3 : 1, background: "transparent" }}
                                         >
-                                            <ChevronRight className="h-4 w-4" />
+                                            <ChevronRight style={{ height: 16, width: 16 }} />
                                         </button>
                                     </div>
                                 )}

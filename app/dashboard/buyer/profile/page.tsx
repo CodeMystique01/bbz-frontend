@@ -21,7 +21,7 @@ export default function BuyerProfilePage() {
         try {
             const data = await apiClient.get<{ id: string; name: string; email: string }>("/api/users/me");
             setForm({ name: data.name || "", email: data.email || "" });
-        } catch { /* ignore */ } finally { setIsLoading(false); }
+        } catch { toast.error("Failed to load profile"); } finally { setIsLoading(false); }
     }
 
     async function handleSave(e: React.FormEvent) {
@@ -39,11 +39,11 @@ export default function BuyerProfilePage() {
     return (
         <div className="space-y-6 animate-fade-in" style={{ maxWidth: 576 }}>
             <div>
-                <h1 className="text-2xl font-bold text-gray-900">My Profile</h1>
-                <p className="text-sm text-gray-500 mt-1">Manage your account details</p>
+                <h1 className="text-xl font-semibold text-gray-900">My Profile</h1>
+                <p className="text-xs text-gray-400 mt-0.5">Manage your account details</p>
             </div>
 
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <div className="rounded-xl border border-gray-100 p-6">
                 <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-100">
                     <div className="w-16 h-16 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 text-2xl font-bold">
                         {(form.name || form.email || "U").charAt(0).toUpperCase()}

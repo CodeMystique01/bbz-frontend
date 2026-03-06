@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { ShieldCheck, CreditCard, CheckCircle2, Package } from "lucide-react";
 import { useCartStore } from "@/store/cart-store";
@@ -11,44 +11,143 @@ import { Footer } from "@/components/layout/Footer";
 import { Button, Spinner } from "@/components/ui";
 import { formatPrice } from "@/lib/utils";
 import { toast } from "sonner";
-import type { Order } from "@/lib/types";
+import type { RazorpayOrderResponse, RazorpaySuccessResponse } from "@/lib/types";
+
+// ── Razorpay type declarations ──────────────────────────────
+declare global {
+    interface Window {
+        Razorpay: new (options: RazorpayCheckoutOptions) => RazorpayInstance;
+    }
+}
+
+interface RazorpayCheckoutOptions {
+    key: string;
+    amount: number;
+    currency: string;
+    name: string;
+    description: string;
+    order_id: string;
+    handler: (response: RazorpaySuccessResponse) => void;
+    prefill?: { email?: string; name?: string };
+    theme?: { color?: string };
+    modal?: { ondismiss?: () => void };
+}
+
+interface RazorpayInstance {
+    open: () => void;
+    close: () => void;
+}
+
+// ── Load Razorpay script ────────────────────────────────────
+function loadRazorpayScript(): Promise<boolean> {
+    return new Promise((resolve) => {
+        if (typeof window !== "undefined" && window.Razorpay) {
+            resolve(true);
+            return;
+        }
+        const script = document.createElement("script");
+        script.src = "https://checkout.razorpay.com/v1/checkout.js";
+        script.onload = () => resolve(true);
+        script.onerror = () => resolve(false);
+        document.body.appendChild(script);
+    });
+}
 
 export default function CheckoutPage() {
     const router = useRouter();
     const { items, total, itemCount, fetchCart, reset } = useCartStore();
-    const { isAuthenticated } = useAuthStore();
-    const [isPlacing, setIsPlacing] = useState(false);
-    const [placedOrder, setPlacedOrder] = useState<Order | null>(null);
-    const [paymentMethod, setPaymentMethod] = useState("ONLINE");
+    const { isAuthenticated, user } = useAuthStore();
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [orderConfirmed, setOrderConfirmed] = useState<{
+        orderId: string;
+        amount: number;
+        paymentId: string;
+    } | null>(null);
 
     useEffect(() => {
         if (!isAuthenticated) { router.push("/login"); return; }
         fetchCart();
     }, [isAuthenticated, router, fetchCart]);
 
-    async function handlePlaceOrder() {
+    const handlePayment = useCallback(async () => {
         if (items.length === 0) return;
-        setIsPlacing(true);
+
+        const razorpayKeyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+        if (!razorpayKeyId) {
+            toast.error("Payment is not configured. Please contact support.");
+            return;
+        }
+
+        setIsProcessing(true);
+
         try {
+            // 1. Load Razorpay script
+            const loaded = await loadRazorpayScript();
+            if (!loaded) {
+                toast.error("Failed to load payment gateway. Please try again.");
+                setIsProcessing(false);
+                return;
+            }
+
+            // 2. Create Razorpay order via backend
             const cartItems = items.map((item) => ({
                 productId: item.productId,
                 quantity: item.quantity,
+                price: item.product.price,
             }));
-            const order = await apiClient.post<Order>("/api/orders", { cartItems, paymentMethod });
-            setPlacedOrder(order);
-            reset();
-            toast.success("Order placed successfully!");
+
+            const razorpayOrder = await apiClient.post<RazorpayOrderResponse>(
+                "/api/payments/cart/purchase",
+                { items: cartItems }
+            );
+
+            // 3. Open Razorpay checkout modal
+            const options: RazorpayCheckoutOptions = {
+                key: razorpayKeyId,
+                amount: razorpayOrder.amount,
+                currency: razorpayOrder.currency || "INR",
+                name: "BuyBizz",
+                description: `Payment for ${itemCount} item${itemCount > 1 ? "s" : ""}`,
+                order_id: razorpayOrder.id,
+                handler: (response: RazorpaySuccessResponse) => {
+                    // Payment successful
+                    setOrderConfirmed({
+                        orderId: razorpayOrder.id,
+                        amount: razorpayOrder.amount,
+                        paymentId: response.razorpay_payment_id,
+                    });
+                    reset();
+                    toast.success("Payment successful!");
+                    setIsProcessing(false);
+                },
+                prefill: {
+                    email: user?.email || "",
+                    name: user?.name || "",
+                },
+                theme: {
+                    color: "#2563eb",
+                },
+                modal: {
+                    ondismiss: () => {
+                        setIsProcessing(false);
+                        toast.info("Payment cancelled");
+                    },
+                },
+            };
+
+            const rzp = new window.Razorpay(options);
+            rzp.open();
         } catch (e: unknown) {
             const err = e as { message?: string };
-            toast.error(err.message || "Failed to place order");
-        } finally {
-            setIsPlacing(false);
+            toast.error(err.message || "Failed to initiate payment");
+            setIsProcessing(false);
         }
-    }
+    }, [items, itemCount, user, reset]);
 
     if (!isAuthenticated) return null;
 
-    if (placedOrder) {
+    // ── Success screen ──────────────────────────────────────
+    if (orderConfirmed) {
         return (
             <div className="min-h-screen flex flex-col bg-white">
                 <Navbar />
@@ -57,17 +156,26 @@ export default function CheckoutPage() {
                         <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-5">
                             <CheckCircle2 className="h-6 w-6 text-green-500" />
                         </div>
-                        <h1 className="text-xl font-semibold text-gray-900 mb-1">Order Confirmed</h1>
+                        <h1 className="text-xl font-semibold text-gray-900 mb-1">Payment Successful</h1>
                         <p className="text-sm text-gray-400 mb-6">
-                            Order <span className="font-mono text-primary-600">#{placedOrder.id.slice(0, 8)}</span> placed successfully.
+                            Your order has been confirmed and payment received.
                         </p>
                         <div className="bg-gray-50 rounded-lg p-4 mb-6 text-left space-y-2 text-sm">
-                            <div className="flex justify-between"><span className="text-gray-400">Amount</span><span className="font-medium text-gray-900">{formatPrice(placedOrder.totalAmount)}</span></div>
-                            <div className="flex justify-between"><span className="text-gray-400">Status</span><span className="font-medium text-amber-600">{placedOrder.status}</span></div>
-                            <div className="flex justify-between"><span className="text-gray-400">Items</span><span className="font-medium text-gray-900">{placedOrder.items?.length || 0}</span></div>
+                            <div className="flex justify-between">
+                                <span className="text-gray-400">Amount Paid</span>
+                                <span className="font-medium text-gray-900">{formatPrice(orderConfirmed.amount / 100)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-gray-400">Payment ID</span>
+                                <span className="font-mono text-xs text-primary-600">{orderConfirmed.paymentId.slice(0, 18)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-gray-400">Status</span>
+                                <span className="font-medium text-green-600">Paid</span>
+                            </div>
                         </div>
                         <div className="flex gap-2">
-                            <Button variant="outline" className="flex-1" onClick={() => router.push(`/dashboard/buyer/orders`)}>View Orders</Button>
+                            <Button variant="outline" className="flex-1" onClick={() => router.push("/dashboard/buyer/orders")}>View Orders</Button>
                             <Button className="flex-1" onClick={() => router.push("/products")}>Continue Shopping</Button>
                         </div>
                     </div>
@@ -77,6 +185,7 @@ export default function CheckoutPage() {
         );
     }
 
+    // ── Checkout screen ─────────────────────────────────────
     return (
         <div className="min-h-screen flex flex-col bg-white">
             <Navbar />
@@ -115,25 +224,15 @@ export default function CheckoutPage() {
                                 </div>
                             </div>
 
-                            {/* Payment Method */}
+                            {/* Payment Info */}
                             <div className="rounded-xl border border-gray-100 p-5">
-                                <h2 className="text-sm font-medium text-gray-900 mb-4">Payment</h2>
-                                <div className="space-y-2">
-                                    {[
-                                        { value: "ONLINE", label: "Online Payment", desc: "Pay via Razorpay", icon: CreditCard },
-                                        { value: "COD", label: "Cash on Delivery", desc: "Pay on receipt", icon: Package },
-                                    ].map((method) => (
-                                        <label key={method.value}
-                                            className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${paymentMethod === method.value ? "border-primary-300 bg-primary-50" : "border-gray-100 hover:border-gray-200"}`}>
-                                            <input type="radio" name="paymentMethod" value={method.value} checked={paymentMethod === method.value}
-                                                onChange={(e) => setPaymentMethod(e.target.value)} className="text-primary-600 focus:ring-primary-500" />
-                                            <method.icon className={`h-4 w-4 ${paymentMethod === method.value ? "text-primary-500" : "text-gray-300"}`} />
-                                            <div>
-                                                <p className="text-sm font-medium text-gray-900">{method.label}</p>
-                                                <p className="text-[11px] text-gray-400">{method.desc}</p>
-                                            </div>
-                                        </label>
-                                    ))}
+                                <h2 className="text-sm font-medium text-gray-900 mb-3">Payment</h2>
+                                <div className="flex items-center gap-3 p-3 rounded-lg border border-primary-200 bg-primary-50">
+                                    <CreditCard className="h-4 w-4 text-primary-500" />
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-900">Online Payment</p>
+                                        <p className="text-[11px] text-gray-400">Pay securely via Razorpay (UPI, Cards, Netbanking)</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -148,11 +247,11 @@ export default function CheckoutPage() {
                                     <hr className="border-gray-50" />
                                     <div className="flex justify-between"><span className="font-medium text-gray-900">Total</span><span className="font-semibold text-gray-900">{formatPrice(total)}</span></div>
                                 </div>
-                                <Button className="w-full mt-5" size="lg" onClick={handlePlaceOrder} disabled={isPlacing}>
-                                    {isPlacing ? (<><Spinner size="sm" className="mr-2" /> Placing...</>) : ("Place Order")}
+                                <Button className="w-full mt-5" size="lg" onClick={handlePayment} disabled={isProcessing}>
+                                    {isProcessing ? (<><Spinner size="sm" className="mr-2" /> Processing...</>) : ("Pay Now")}
                                 </Button>
                                 <div className="flex items-center justify-center gap-1.5 mt-3 text-[11px] text-gray-300">
-                                    <ShieldCheck className="h-3 w-3" /><span>Secure checkout</span>
+                                    <ShieldCheck className="h-3 w-3" /><span>Secured by Razorpay</span>
                                 </div>
                             </div>
                         </div>

@@ -20,6 +20,9 @@ export default function LoginPage() {
     const { login } = useAuthStore();
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [showResend, setShowResend] = useState(false);
+    const [resendEmail, setResendEmail] = useState("");
+    const [resending, setResending] = useState(false);
 
     const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>();
 
@@ -36,6 +39,21 @@ export default function LoginPage() {
             toast.error(err instanceof Error ? err.message : "Login failed");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleResend = async () => {
+        if (!resendEmail) { toast.error("Please enter your email"); return; }
+        setResending(true);
+        try {
+            await apiClient.post("/api/auth/resend-verification", { email: resendEmail });
+            toast.success("Verification email sent! Check your inbox.");
+            setShowResend(false);
+            setResendEmail("");
+        } catch (err: unknown) {
+            toast.error(err instanceof Error ? err.message : "Failed to resend");
+        } finally {
+            setResending(false);
         }
     };
 
@@ -100,7 +118,7 @@ export default function LoginPage() {
                             error={errors.password?.message}
                             {...register("password", {
                                 required: "Password is required",
-                                minLength: { value: 6, message: "Min 6 characters" },
+                                minLength: { value: 8, message: "Min 8 characters" },
                             })}
                         />
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 6 }}>
@@ -139,6 +157,53 @@ export default function LoginPage() {
                         Sign up
                     </Link>
                 </p>
+
+                {/* Resend Verification */}
+                <div style={{ textAlign: "center", marginTop: 16 }}>
+                    {!showResend ? (
+                        <button
+                            type="button"
+                            onClick={() => setShowResend(true)}
+                            style={{
+                                fontSize: 12, color: "#6b7280", background: "transparent",
+                                border: "none", cursor: "pointer", textDecoration: "underline",
+                            }}
+                        >
+                            Didn&apos;t receive verification email?
+                        </button>
+                    ) : (
+                        <div style={{
+                            display: "flex", gap: 8, alignItems: "center",
+                            marginTop: 4, justifyContent: "center",
+                        }}>
+                            <input
+                                type="email"
+                                placeholder="Enter your email"
+                                value={resendEmail}
+                                onChange={(e) => setResendEmail(e.target.value)}
+                                style={{
+                                    flex: 1, padding: "8px 12px", borderRadius: 8,
+                                    border: "1px solid #e5e7eb", fontSize: 13,
+                                    outline: "none",
+                                }}
+                            />
+                            <button
+                                type="button"
+                                onClick={handleResend}
+                                disabled={resending}
+                                style={{
+                                    padding: "8px 16px", borderRadius: 8,
+                                    background: "#2563eb", color: "#fff",
+                                    fontSize: 12, fontWeight: 500, border: "none",
+                                    cursor: resending ? "not-allowed" : "pointer",
+                                    opacity: resending ? 0.6 : 1,
+                                }}
+                            >
+                                {resending ? "Sending..." : "Resend"}
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

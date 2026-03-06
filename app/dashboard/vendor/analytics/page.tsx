@@ -60,8 +60,8 @@ export default function VendorAnalyticsPage() {
         <div className="space-y-8 animate-fade-in">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
-                    <p className="text-sm text-gray-500 mt-1">Sales performance and customer insights</p>
+                    <h1 className="text-xl font-semibold text-gray-900">Analytics</h1>
+                    <p className="text-xs text-gray-400 mt-0.5">Sales performance and customer insights</p>
                 </div>
                 <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
                     {PERIODS.map((p) => (
@@ -73,33 +73,32 @@ export default function VendorAnalyticsPage() {
             </div>
 
             {/* Sales Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-white rounded-xl border border-gray-200 p-5">
-                    <div className="flex items-center gap-2 mb-2"><TrendingUp className="h-4 w-4 text-green-500" /><span className="text-sm text-gray-500">Revenue</span></div>
-                    <p className="text-2xl font-bold text-gray-900">{formatPrice(sales.totalRevenue)}</p>
-                </div>
-                <div className="bg-white rounded-xl border border-gray-200 p-5">
-                    <div className="flex items-center gap-2 mb-2"><ShoppingBag className="h-4 w-4 text-primary-500" /><span className="text-sm text-gray-500">Orders</span></div>
-                    <p className="text-2xl font-bold text-gray-900">{sales.totalOrders}</p>
-                </div>
-                <div className="bg-white rounded-xl border border-gray-200 p-5">
-                    <div className="flex items-center gap-2 mb-2"><BarChart3 className="h-4 w-4 text-purple-500" /><span className="text-sm text-gray-500">Avg Order Value</span></div>
-                    <p className="text-2xl font-bold text-gray-900">{formatPrice(sales.averageOrderValue)}</p>
-                </div>
-                <div className="bg-white rounded-xl border border-gray-200 p-5">
-                    <div className="flex items-center gap-2 mb-2"><Users className="h-4 w-4 text-amber-500" /><span className="text-sm text-gray-500">Unique Customers</span></div>
-                    <p className="text-2xl font-bold text-gray-900">{behavior.uniqueCustomers}</p>
-                </div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                {[
+                    { icon: TrendingUp, label: "Revenue", value: formatPrice(sales.totalRevenue), color: "text-green-500" },
+                    { icon: ShoppingBag, label: "Orders", value: sales.totalOrders, color: "text-primary-500" },
+                    { icon: BarChart3, label: "Avg Order Value", value: formatPrice(sales.averageOrderValue), color: "text-purple-500" },
+                    { icon: Users, label: "Unique Customers", value: behavior.uniqueCustomers, color: "text-amber-500" },
+                ].map((s) => (
+                    <div key={s.label} className="rounded-xl border border-gray-100 p-4 hover:border-gray-200 transition-colors">
+                        <s.icon className={`h-4 w-4 ${s.color} mb-3`} />
+                        <p className="text-xl font-semibold text-gray-900">{s.value}</p>
+                        <p className="text-[11px] text-gray-400 mt-0.5">{s.label}</p>
+                    </div>
+                ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                 {/* Daily Sales Chart */}
-                <div className="bg-white rounded-xl border border-gray-200 p-6">
-                    <div className="flex items-center gap-2 mb-4"><Calendar className="h-4 w-4 text-primary-500" /><h2 className="font-semibold text-gray-900">Daily Sales</h2></div>
+                <div className="rounded-xl border border-gray-100">
+                    <div className="flex items-center gap-2 p-4 border-b border-gray-50">
+                        <Calendar className="h-4 w-4 text-primary-500" />
+                        <h2 className="text-sm font-medium text-gray-900">Daily Sales</h2>
+                    </div>
                     {sales.dailySales.length === 0 ? (
-                        <div className="h-48 flex items-center justify-center text-sm text-gray-400">No data for this period</div>
+                        <div className="p-8 flex items-center justify-center text-xs text-gray-400">No data for this period</div>
                     ) : (
-                        <div className="space-y-2">
+                        <div className="p-4 space-y-2">
                             {sales.dailySales.slice(-10).map((day) => {
                                 const max = Math.max(...sales.dailySales.map((d) => d.revenue), 1);
                                 return (
@@ -119,20 +118,22 @@ export default function VendorAnalyticsPage() {
                 </div>
 
                 {/* Behavior Metrics */}
-                <div className="bg-white rounded-xl border border-gray-200 p-6">
-                    <h2 className="font-semibold text-gray-900 mb-4">Customer Insights</h2>
-                    <div className="space-y-4">
-                        <div className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
-                            <span className="text-sm text-gray-600">Repeat Customers</span>
-                            <span className="text-lg font-bold text-gray-900">{behavior.repeatCustomers}</span>
+                <div className="rounded-xl border border-gray-100">
+                    <div className="p-4 border-b border-gray-50">
+                        <h2 className="text-sm font-medium text-gray-900">Customer Insights</h2>
+                    </div>
+                    <div className="p-4 space-y-3">
+                        <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <span className="text-xs text-gray-500">Repeat Customers</span>
+                            <span className="text-sm font-semibold text-gray-900">{behavior.repeatCustomers}</span>
                         </div>
-                        <div className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
-                            <span className="text-sm text-gray-600">Average Rating</span>
-                            <span className="text-lg font-bold text-gray-900">{behavior.averageRating ? behavior.averageRating.toFixed(1) : "—"} ⭐</span>
+                        <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <span className="text-xs text-gray-500">Average Rating</span>
+                            <span className="text-sm font-semibold text-gray-900">{behavior.averageRating ? behavior.averageRating.toFixed(1) : "—"} ⭐</span>
                         </div>
-                        <div className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
-                            <span className="text-sm text-gray-600">Conversion Rate</span>
-                            <span className="text-lg font-bold text-gray-900">{behavior.conversionRate ? (behavior.conversionRate * 100).toFixed(1) : "0"}%</span>
+                        <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <span className="text-xs text-gray-500">Conversion Rate</span>
+                            <span className="text-sm font-semibold text-gray-900">{behavior.conversionRate ? (behavior.conversionRate * 100).toFixed(1) : "0"}%</span>
                         </div>
                     </div>
                 </div>

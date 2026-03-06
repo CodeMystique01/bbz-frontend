@@ -206,3 +206,18 @@ export interface PaginatedResponse<T> {
     limit: number;
     totalPages: number;
 }
+
+// ── Razorpay ──
+export interface RazorpayOrderResponse {
+    id: string;          // Razorpay order ID (order_xxxxx)
+    amount: number;      // Amount in paise
+    currency: string;    // e.g. "INR"
+    status: string;
+    metadata?: Record<string, unknown>;
+}
+
+export interface RazorpaySuccessResponse {
+    razorpay_payment_id: string;
+    razorpay_order_id: string;
+    razorpay_signature: string;
+}

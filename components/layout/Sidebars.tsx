@@ -19,55 +19,62 @@ function SidebarNav({ items, title }: { items: SidebarItem[]; title: string }) {
     const pathname = usePathname();
     return (
         <aside style={{ width: 220, flexShrink: 0 }} className="hidden lg:block">
-            <div style={{ position: "sticky", top: 80 }}>
-                <h2
-                    style={{
-                        fontSize: 11,
-                        fontWeight: 500,
-                        color: "#d1d5db",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.1em",
-                        padding: "0 12px",
-                        marginBottom: 16,
-                    }}
-                >
-                    {title}
-                </h2>
-                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                    {items.map((item) => {
-                        const isActive = pathname === item.href;
-                        return (
-                            <Link
-                                key={item.href}
-                                href={item.href}
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 12,
-                                    padding: "8px 12px",
-                                    borderRadius: 8,
-                                    fontSize: 13,
-                                    fontWeight: isActive ? 500 : 400,
-                                    color: isActive ? "#1d4ed8" : "#6b7280",
-                                    background: isActive ? "#eff6ff" : "transparent",
-                                    textDecoration: "none",
-                                    transition: "background .15s, color .15s",
-                                }}
-                            >
-                                <item.icon
-                                    style={{
-                                        height: 16,
-                                        width: 16,
-                                        color: isActive ? "#3b82f6" : "#d1d5db",
-                                    }}
-                                />
-                                {item.label}
-                            </Link>
-                        );
-                    })}
-                </div>
-            </div>
+            <SidebarContent items={items} title={title} pathname={pathname} />
         </aside>
+    );
+}
+
+/** Inner content — used by both desktop sidebar and mobile drawer */
+export function SidebarContent({ items, title, pathname }: { items: SidebarItem[]; title: string; pathname: string }) {
+    return (
+        <div style={{ position: "sticky", top: 80 }}>
+            <h2
+                style={{
+                    fontSize: 11,
+                    fontWeight: 500,
+                    color: "#d1d5db",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.1em",
+                    padding: "0 12px",
+                    marginBottom: 16,
+                }}
+            >
+                {title}
+            </h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                {items.map((item) => {
+                    const isActive = pathname === item.href;
+                    return (
+                        <Link
+                            key={item.href}
+                            href={item.href}
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 12,
+                                padding: "8px 12px",
+                                borderRadius: 8,
+                                fontSize: 13,
+                                fontWeight: isActive ? 500 : 400,
+                                color: isActive ? "#1d4ed8" : "#6b7280",
+                                background: isActive ? "#eff6ff" : "transparent",
+                                textDecoration: "none",
+                                transition: "background .15s, color .15s",
+                            }}
+                        >
+                            <item.icon
+                                style={{
+                                    height: 16,
+                                    width: 16,
+                                    color: isActive ? "#3b82f6" : "#d1d5db",
+                                }}
+                            />
+                            {item.label}
+                        </Link>
+                    );
+                })}
+            </div>
+        </div>
     );
 }
 
@@ -104,3 +111,12 @@ const adminItems: SidebarItem[] = [
 export function BuyerSidebar() { return <SidebarNav items={buyerItems} title="Buyer" />; }
 export function VendorSidebar() { return <SidebarNav items={vendorItems} title="Vendor" />; }
 export function AdminSidebar() { return <SidebarNav items={adminItems} title="Admin" />; }
+
+export function BuyerSidebarMobile() { return <MobileSidebarContent items={buyerItems} title="Buyer" />; }
+export function VendorSidebarMobile() { return <MobileSidebarContent items={vendorItems} title="Vendor" />; }
+export function AdminSidebarMobile() { return <MobileSidebarContent items={adminItems} title="Admin" />; }
+
+function MobileSidebarContent({ items, title }: { items: SidebarItem[]; title: string }) {
+    const pathname = usePathname();
+    return <SidebarContent items={items} title={title} pathname={pathname} />;
+}
