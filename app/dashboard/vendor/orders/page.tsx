@@ -6,6 +6,7 @@ import { apiClient } from "@/lib/api-client";
 import type { Order, OrderListResponse } from "@/lib/types";
 import { Spinner, Badge } from "@/components/ui";
 import { formatPrice, formatDate } from "@/lib/utils";
+import { useAuthStore } from "@/store/auth-store";
 
 const STATUS_OPTIONS = [
     { value: "", label: "All Statuses" },
@@ -24,6 +25,7 @@ const STATUS_COLORS: Record<string, "success" | "warning" | "error" | "default">
 };
 
 export default function VendorOrdersPage() {
+    const { user } = useAuthStore();
     const [orders, setOrders] = useState<Order[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [statusFilter, setStatusFilter] = useState("");
@@ -34,20 +36,16 @@ export default function VendorOrdersPage() {
     useEffect(() => { loadOrders(); }, [page, statusFilter]);
 
     async function loadOrders() {
+        if (!user) return;
         setIsLoading(true);
         try {
             const params = new URLSearchParams();
             if (statusFilter) params.set("status", statusFilter);
             params.set("page", String(page));
             params.set("limit", String(limit));
-            const res = await apiClient.get<OrderListResponse | Order[]>(`/api/orders?${params.toString()}`);
-            if (Array.isArray(res)) {
-                setOrders(res);
-                setTotalPages(1);
-            } else {
-                setOrders(res.orders);
-                setTotalPages(res.totalPages);
-            }
+            const res = await apiClient.get<OrderListResponse>(`/api/orders/vendor/${user.id}?${params.toString()}`);
+            setOrders(res.orders ?? []);
+            setTotalPages(res.totalPages ?? 1);
         } catch { setOrders([]); } finally { setIsLoading(false); }
     }
 

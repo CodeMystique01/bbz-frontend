@@ -25,7 +25,7 @@ export function Footer() {
                             <li><Link href="/products" className="text-sm text-gray-500 hover:text-white transition-colors">Browse Products</Link></li>
                             <li><Link href="/products?category=Software" className="text-sm text-gray-500 hover:text-white transition-colors">Software</Link></li>
                             <li><Link href="/products?category=Templates" className="text-sm text-gray-500 hover:text-white transition-colors">Templates</Link></li>
-                            <li><Link href="/signup?role=VENDOR" className="text-sm text-gray-500 hover:text-white transition-colors">Become a Vendor</Link></li>
+                            <li><Link href="/signup" className="text-sm text-gray-500 hover:text-white transition-colors">Become a Vendor</Link></li>
                         </ul>
                     </div>
                     <div>

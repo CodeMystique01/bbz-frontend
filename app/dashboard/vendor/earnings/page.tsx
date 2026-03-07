@@ -47,15 +47,15 @@ export default function VendorEarningsPage() {
                 <div className="p-4 border-b border-gray-50">
                     <h2 className="text-sm font-medium text-gray-900">Revenue by Product</h2>
                 </div>
-                {stats.topProducts.length === 0 ? (
+                {(stats.topProducts?.length ?? 0) === 0 ? (
                     <div className="p-8 text-center">
                         <TrendingUp className="h-8 w-8 text-gray-200 mx-auto mb-2" />
                         <p className="text-xs text-gray-400">No sales data yet</p>
                     </div>
                 ) : (
                     <div className="divide-y divide-gray-50">
-                        {stats.topProducts.map((p, i) => {
-                            const maxRevenue = Math.max(...stats.topProducts.map((tp) => tp.revenue));
+                        {stats.topProducts?.map((p, i) => {
+                            const maxRevenue = Math.max(...(stats.topProducts?.map((tp) => tp.revenue) ?? [0]));
                             const pct = maxRevenue > 0 ? (p.revenue / maxRevenue) * 100 : 0;
                             return (
                                 <div key={i} className="px-4 py-3">

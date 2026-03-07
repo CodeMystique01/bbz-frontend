@@ -564,7 +564,7 @@ export default function HomePage() {
 
               <div style={{ display: "flex", gap: 12 }}>
                 <Link
-                  href="/signup?role=VENDOR"
+                  href="/signup"
                   style={{
                     display: "inline-flex",
                     alignItems: "center",

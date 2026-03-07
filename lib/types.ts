@@ -6,6 +6,7 @@ export interface AuthUser {
     email: string;
     role: "BUYER" | "VENDOR" | "ADMIN";
     name?: string;
+    isVendor: boolean;
 }
 
 // ── Products ──
@@ -205,6 +206,16 @@ export interface PaginatedResponse<T> {
     page: number;
     limit: number;
     totalPages: number;
+}
+
+// ── Uploads ──
+export interface UploadResult {
+    url: string;
+    publicId: string;
+    filename: string;
+    size: number;
+    mimeType: string;
+    thumbnailUrl?: string;
 }
 
 // ── Razorpay ──

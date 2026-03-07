@@ -4,3 +4,5 @@ export { Card, CardHeader, CardTitle, CardDescription, CardContent } from "./Car
 export { Badge } from "./Badge";
 export { Spinner, PageLoader, EmptyState } from "./Spinner";
 export { Avatar } from "./Avatar";
+export { ImageUpload } from "./ImageUpload";
+export { FileUpload } from "./FileUpload";

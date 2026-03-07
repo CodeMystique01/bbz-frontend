@@ -1,7 +1,6 @@
 "use client";
 
-import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import { forwardRef, type ButtonHTMLAttributes, type ReactNode, useState } from "react";
 import { Loader2 } from "lucide-react";
 
 type ButtonVariant = "primary" | "secondary" | "outline" | "ghost" | "danger";
@@ -15,58 +14,73 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     rightIcon?: ReactNode;
 }
 
-const variants: Record<ButtonVariant, string> = {
-    primary:
-        "bg-primary-600 text-white hover:bg-primary-700 shadow-sm active:bg-primary-800",
-    secondary:
-        "bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300",
-    outline:
-        "border border-gray-300 text-gray-700 hover:bg-gray-50 active:bg-gray-100",
-    ghost:
-        "text-gray-600 hover:bg-gray-100 hover:text-gray-800",
-    danger:
-        "bg-red-600 text-white hover:bg-red-700 active:bg-red-800",
+const BASE: React.CSSProperties = {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontWeight: 500,
+    cursor: "pointer",
+    border: "none",
+    transition: "background 0.15s, opacity 0.15s",
+    fontFamily: "inherit",
 };
 
-const sizes: Record<ButtonSize, string> = {
-    sm: "h-8 px-3 text-xs gap-1.5 rounded-md",
-    md: "h-10 px-4 text-sm gap-2 rounded-lg",
-    lg: "h-12 px-6 text-base gap-2 rounded-xl",
+const VARIANTS: Record<ButtonVariant, React.CSSProperties> = {
+    primary: { background: "#2563eb", color: "#fff" },
+    secondary: { background: "#f4f4f5", color: "#3f3f46" },
+    outline: { background: "transparent", color: "#3f3f46", border: "1px solid #d4d4d8" },
+    ghost: { background: "transparent", color: "#52525b" },
+    danger: { background: "#dc2626", color: "#fff" },
+};
+
+const HOVER: Record<ButtonVariant, string> = {
+    primary: "#1d4ed8",
+    secondary: "#e4e4e7",
+    outline: "#fafafa",
+    ghost: "#f4f4f5",
+    danger: "#b91c1c",
+};
+
+const SIZES: Record<ButtonSize, React.CSSProperties> = {
+    sm: { height: 32, padding: "0 12px", fontSize: 12, gap: 6, borderRadius: 6 },
+    md: { height: 40, padding: "0 16px", fontSize: 14, gap: 8, borderRadius: 8 },
+    lg: { height: 48, padding: "0 24px", fontSize: 15, gap: 8, borderRadius: 10 },
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-    (
-        {
-            variant = "primary",
-            size = "md",
-            isLoading = false,
-            leftIcon,
-            rightIcon,
-            className,
-            disabled,
-            children,
-            ...props
-        },
-        ref
-    ) => {
+    ({ variant = "primary", size = "md", isLoading = false, leftIcon, rightIcon, style, disabled, children, ...props }, ref) => {
+        const [hovered, setHovered] = useState(false);
+
+        const variantStyle = VARIANTS[variant];
+        const hoverBg = HOVER[variant];
+
+        const computedStyle: React.CSSProperties = {
+            ...BASE,
+            ...variantStyle,
+            ...SIZES[size],
+            opacity: disabled || isLoading ? 0.5 : 1,
+            cursor: disabled || isLoading ? "not-allowed" : "pointer",
+            ...(hovered && !disabled && !isLoading && variant !== "outline" && variant !== "ghost"
+                ? { background: hoverBg }
+                : hovered && !disabled && !isLoading
+                    ? { background: hoverBg }
+                    : {}),
+            ...style,
+        };
+
         return (
             <button
                 ref={ref}
                 disabled={disabled || isLoading}
-                className={cn(
-                    "inline-flex items-center justify-center font-medium transition-colors cursor-pointer",
-                    "disabled:opacity-50 disabled:cursor-not-allowed",
-                    variants[variant],
-                    sizes[size],
-                    className
-                )}
+                style={computedStyle}
+                onMouseEnter={() => setHovered(true)}
+                onMouseLeave={() => setHovered(false)}
                 {...props}
             >
-                {isLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                    leftIcon
-                )}
+                {isLoading
+                    ? <Loader2 style={{ height: 16, width: 16, animation: "spin 1s linear infinite" }} />
+                    : leftIcon
+                }
                 {children}
                 {!isLoading && rightIcon}
             </button>

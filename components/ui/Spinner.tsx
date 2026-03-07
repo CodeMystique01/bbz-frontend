@@ -1,20 +1,19 @@
-import { cn } from "@/lib/utils";
 import { Loader2, Inbox } from "lucide-react";
+import type { ElementType, ReactNode } from "react";
 
 /* ── Spinner ──────────────────────────────────────────────── */
 
-export function Spinner({
-    size = "md",
-    className,
-}: {
-    size?: "sm" | "md" | "lg";
-    className?: string;
-}) {
-    const sizeMap = { sm: "h-4 w-4", md: "h-6 w-6", lg: "h-8 w-8" };
+const SIZES = { sm: 16, md: 24, lg: 32 };
+
+export function Spinner({ size = "md" }: { size?: "sm" | "md" | "lg"; className?: string }) {
     return (
-        <Loader2
-            className={cn("animate-spin text-primary-600", sizeMap[size], className)}
-        />
+        <Loader2 style={{
+            height: SIZES[size],
+            width: SIZES[size],
+            color: "#2563eb",
+            animation: "spin 1s linear infinite",
+            flexShrink: 0,
+        }} />
     );
 }
 
@@ -22,7 +21,7 @@ export function Spinner({
 
 export function PageLoader() {
     return (
-        <div className="flex items-center justify-center min-h-[400px]">
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: 400 }}>
             <Spinner size="lg" />
         </div>
     );
@@ -38,17 +37,21 @@ export function EmptyState({
 }: {
     title?: string;
     description?: string;
-    icon?: React.ElementType;
-    children?: React.ReactNode;
+    icon?: ElementType;
+    children?: ReactNode;
 }) {
     return (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
-                <Icon className="h-8 w-8 text-gray-400" />
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "64px 24px", textAlign: "center" }}>
+            <div style={{
+                width: 64, height: 64, borderRadius: "50%",
+                background: "#f4f4f5", display: "flex", alignItems: "center",
+                justifyContent: "center", marginBottom: 16
+            }}>
+                <Icon style={{ height: 28, width: 28, color: "#a1a1aa" }} />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-1">{title}</h3>
-            <p className="text-sm text-gray-500 max-w-sm">{description}</p>
-            {children && <div className="mt-4">{children}</div>}
+            <h3 style={{ fontSize: 16, fontWeight: 600, color: "#111827", margin: "0 0 6px" }}>{title}</h3>
+            <p style={{ fontSize: 14, color: "#6b7280", margin: 0, maxWidth: 360 }}>{description}</p>
+            {children && <div style={{ marginTop: 16 }}>{children}</div>}
         </div>
     );
 }

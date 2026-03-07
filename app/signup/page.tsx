@@ -10,10 +10,10 @@ import { Button, Input } from "@/components/ui";
 import { apiClient } from "@/lib/api-client";
 
 interface SignupForm {
+    name: string;
     email: string;
     password: string;
     confirmPassword: string;
-    role: "BUYER" | "VENDOR";
 }
 
 export default function SignupPage() {
@@ -21,38 +21,21 @@ export default function SignupPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const { register, handleSubmit, watch, formState: { errors } } = useForm<SignupForm>({ defaultValues: { role: "BUYER" } });
-    const selectedRole = watch("role");
+    const { register, handleSubmit, watch, formState: { errors } } = useForm<SignupForm>();
     const password = watch("password");
 
     const onSubmit = async (data: SignupForm) => {
         setLoading(true);
         try {
-            await apiClient.post("/api/auth/signup", { email: data.email, password: data.password, role: data.role });
+            await apiClient.post("/api/auth/signup", { email: data.email, password: data.password, name: data.name });
             toast.success("Account created! Check your email to verify.");
-            router.push("/login");
+            router.push(`/verify-email?email=${encodeURIComponent(data.email)}`);
         } catch (err: unknown) {
             toast.error(err instanceof Error ? err.message : "Signup failed");
         } finally {
             setLoading(false);
         }
     };
-
-    const roleButtonStyle = (active: boolean): React.CSSProperties => ({
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 8,
-        padding: "10px 0",
-        borderRadius: 8,
-        border: active ? "1px solid #93c5fd" : "1px solid #e5e7eb",
-        background: active ? "#eff6ff" : "transparent",
-        color: active ? "#1d4ed8" : "#6b7280",
-        cursor: "pointer",
-        fontSize: 13,
-        fontWeight: 500,
-        transition: "all .15s",
-    });
 
     return (
         <div
@@ -94,22 +77,17 @@ export default function SignupPage() {
 
                 {/* Form */}
                 <form onSubmit={handleSubmit(onSubmit)} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                    {/* Role picker */}
-                    <div>
-                        <label style={{ display: "block", fontSize: 12, fontWeight: 500, color: "#6b7280", marginBottom: 8 }}>
-                            I want to
-                        </label>
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                            <label style={roleButtonStyle(selectedRole === "BUYER")}>
-                                <input type="radio" value="BUYER" style={{ display: "none" }} {...register("role")} />
-                                <User style={{ height: 14, width: 14 }} /> Buy Products
-                            </label>
-                            <label style={roleButtonStyle(selectedRole === "VENDOR")}>
-                                <input type="radio" value="VENDOR" style={{ display: "none" }} {...register("role")} />
-                                <Store style={{ height: 14, width: 14 }} /> Sell Products
-                            </label>
-                        </div>
-                    </div>
+                    <Input
+                        label="Name"
+                        type="text"
+                        placeholder="John Doe"
+                        leftIcon={<User style={{ height: 16, width: 16 }} />}
+                        error={errors.name?.message}
+                        {...register("name", {
+                            required: "Name is required",
+                            minLength: { value: 1, message: "Min 1 character" },
+                        })}
+                    />
 
                     <Input
                         label="Email"

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
     ShoppingCart,
     Menu,
@@ -11,13 +12,15 @@ import {
     LayoutDashboard,
     ChevronDown,
     Store,
+    ArrowLeftRight,
 } from "lucide-react";
 import { useAuthStore } from "@/store/auth-store";
 import { useCartStore } from "@/store/cart-store";
 import { Avatar } from "@/components/ui";
 
 export function Navbar() {
-    const { isAuthenticated, user, logout } = useAuthStore();
+    const router = useRouter();
+    const { isAuthenticated, user, logout, activeRole, switchRole } = useAuthStore();
     const { itemCount, fetchCart } = useCartStore();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -45,9 +48,16 @@ export function Navbar() {
     const dashboardPath =
         user?.role === "ADMIN"
             ? "/admin"
-            : user?.role === "VENDOR"
+            : activeRole === "VENDOR"
                 ? "/dashboard/vendor"
                 : "/dashboard/buyer";
+
+    const profilePath =
+        user?.role === "ADMIN"
+            ? "/admin"
+            : activeRole === "VENDOR"
+                ? "/dashboard/vendor/profile"
+                : "/dashboard/buyer/profile";
 
     return (
         <header
@@ -183,7 +193,7 @@ export function Navbar() {
                                                     {user?.name || user?.email}
                                                 </p>
                                                 <p style={{ fontSize: 12, color: "#9ca3af", margin: "2px 0 0", textTransform: "capitalize" }}>
-                                                    {user?.role?.toLowerCase()}
+                                                    {user?.role === "ADMIN" ? "admin" : activeRole.toLowerCase()}
                                                 </p>
                                             </div>
                                             <Link
@@ -195,13 +205,39 @@ export function Navbar() {
                                                 Dashboard
                                             </Link>
                                             <Link
-                                                href="/dashboard/settings"
+                                                href={profilePath}
                                                 style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 16px", fontSize: 14, color: "#4b5563", textDecoration: "none" }}
                                                 onClick={() => setUserMenuOpen(false)}
                                             >
                                                 <User style={{ height: 16, width: 16, color: "#9ca3af" }} />
                                                 Profile
                                             </Link>
+                                            {user?.isVendor && (
+                                                <button
+                                                    onClick={() => {
+                                                        const next = activeRole === "BUYER" ? "VENDOR" : "BUYER";
+                                                        switchRole(next);
+                                                        setUserMenuOpen(false);
+                                                        router.push(next === "VENDOR" ? "/dashboard/vendor" : "/dashboard/buyer");
+                                                    }}
+                                                    style={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        gap: 12,
+                                                        padding: "10px 16px",
+                                                        fontSize: 14,
+                                                        color: "#4b5563",
+                                                        width: "100%",
+                                                        cursor: "pointer",
+                                                        border: "none",
+                                                        background: "transparent",
+                                                        textAlign: "left",
+                                                    }}
+                                                >
+                                                    <ArrowLeftRight style={{ height: 16, width: 16, color: "#9ca3af" }} />
+                                                    {activeRole === "BUYER" ? "Switch to Vendor Dashboard" : "Switch to Buyer Dashboard"}
+                                                </button>
+                                            )}
                                             <div style={{ borderTop: "1px solid #f9fafb", marginTop: 4, paddingTop: 4 }}>
                                                 <button
                                                     onClick={() => { logout(); setUserMenuOpen(false); }}
@@ -276,6 +312,21 @@ export function Navbar() {
                                         )}
                                     </Link>
                                     <Link href={dashboardPath} style={{ display: "block", padding: "10px 12px", fontSize: 14, color: "#4b5563", borderRadius: 8, textDecoration: "none" }} onClick={() => setMobileMenuOpen(false)}>Dashboard</Link>
+                                    <Link href={profilePath} style={{ display: "block", padding: "10px 12px", fontSize: 14, color: "#4b5563", borderRadius: 8, textDecoration: "none" }} onClick={() => setMobileMenuOpen(false)}>Profile</Link>
+                                    {user?.isVendor && (
+                                        <button
+                                            onClick={() => {
+                                                const next = activeRole === "BUYER" ? "VENDOR" : "BUYER";
+                                                switchRole(next);
+                                                setMobileMenuOpen(false);
+                                                router.push(next === "VENDOR" ? "/dashboard/vendor" : "/dashboard/buyer");
+                                            }}
+                                            style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", textAlign: "left", padding: "10px 12px", fontSize: 14, color: "#4b5563", borderRadius: 8, border: "none", background: "transparent", cursor: "pointer" }}
+                                        >
+                                            <ArrowLeftRight style={{ height: 14, width: 14 }} />
+                                            {activeRole === "BUYER" ? "Switch to Vendor Dashboard" : "Switch to Buyer Dashboard"}
+                                        </button>
+                                    )}
                                     <button onClick={() => { logout(); setMobileMenuOpen(false); }} style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 12px", fontSize: 14, color: "#ef4444", borderRadius: 8, border: "none", background: "transparent", cursor: "pointer" }}>Log out</button>
                                 </>
                             ) : (

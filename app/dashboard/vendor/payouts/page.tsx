@@ -91,7 +91,7 @@ export default function VendorPayoutsPage() {
             {/* Payout History */}
             <div className="rounded-xl border border-gray-100">
                 <div className="p-4 border-b border-gray-50"><h2 className="text-sm font-medium text-gray-900">Payout History</h2></div>
-                {earnings.payouts.length === 0 ? (
+                {(earnings.payouts?.length ?? 0) === 0 ? (
                     <div className="p-8 text-center"><DollarSign className="h-8 w-8 text-gray-200 mx-auto mb-2" /><p className="text-xs text-gray-400">No payouts yet</p></div>
                 ) : (
                     <>

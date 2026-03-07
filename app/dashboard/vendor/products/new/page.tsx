@@ -4,8 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { Upload, ArrowLeft } from "lucide-react";
-import { Button, Input } from "@/components/ui";
+import { ArrowLeft } from "lucide-react";
+import { Button, Input, ImageUpload, FileUpload } from "@/components/ui";
 import { apiClient } from "@/lib/api-client";
 import type { Product } from "@/lib/types";
 
@@ -26,7 +26,9 @@ interface ProductForm {
 export default function NewProductPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
-    const { register, handleSubmit, formState: { errors } } = useForm<ProductForm>();
+    const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<ProductForm>();
+    const imageUrl = watch("imageUrl", "");
+    const fileUrl = watch("fileUrl", "");
 
     const onSubmit = async (data: ProductForm) => {
         setLoading(true);
@@ -88,11 +90,19 @@ export default function NewProductPage() {
                         </select>
                     </div>
 
-                    <Input label="Image URL" placeholder="https://example.com/image.jpg" error={errors.imageUrl?.message}
-                        {...register("imageUrl")} />
+                    <ImageUpload
+                        label="Product Image"
+                        value={imageUrl}
+                        onChange={(url) => setValue("imageUrl", url)}
+                        error={errors.imageUrl?.message}
+                    />
 
-                    <Input label="File / Download URL" placeholder="https://example.com/product.zip" error={errors.fileUrl?.message} leftIcon={<Upload className="h-4 w-4" />}
-                        {...register("fileUrl")} />
+                    <FileUpload
+                        label="Product File"
+                        value={fileUrl}
+                        onChange={(url) => setValue("fileUrl", url)}
+                        error={errors.fileUrl?.message}
+                    />
 
                     <div className="bg-amber-50 border border-amber-100 rounded-lg px-4 py-3 text-xs text-amber-700">
                         Products require admin approval before they are visible in the marketplace.

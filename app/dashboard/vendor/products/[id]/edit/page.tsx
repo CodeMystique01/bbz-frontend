@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
 import type { Product } from "@/lib/types";
-import { Button, Spinner } from "@/components/ui";
+import { Button, Spinner, ImageUpload, FileUpload } from "@/components/ui";
 import { toast } from "sonner";
 
 const CATEGORIES = [
@@ -112,16 +112,16 @@ export default function EditProductPage() {
                             </select>
                         </div>
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Image URL</label>
-                        <input type="url" name="imageUrl" value={form.imageUrl} onChange={handleChange}
-                            className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200" />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Download File URL</label>
-                        <input type="url" name="fileUrl" value={form.fileUrl} onChange={handleChange}
-                            className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200" />
-                    </div>
+                    <ImageUpload
+                        label="Product Image"
+                        value={form.imageUrl}
+                        onChange={(url) => setForm((prev) => ({ ...prev, imageUrl: url }))}
+                    />
+                    <FileUpload
+                        label="Product File"
+                        value={form.fileUrl}
+                        onChange={(url) => setForm((prev) => ({ ...prev, fileUrl: url }))}
+                    />
                 </div>
                 <div className="flex gap-3">
                     <Button type="button" variant="outline" onClick={() => router.back()}>Cancel</Button>

@@ -29,9 +29,20 @@ export function AuthGuard({ children, requiredRole }: AuthGuardProps) {
         }
 
         // Logged in but wrong role → send to their dashboard
-        if (requiredRole && user.role !== requiredRole) {
-            router.replace(roleDashboard[user.role] ?? "/");
-            return;
+        if (requiredRole) {
+            const hasAccess =
+                requiredRole === "VENDOR"
+                    ? user.isVendor === true
+                    : user.role === requiredRole;
+            if (!hasAccess) {
+                const fallback = user.role === "ADMIN"
+                    ? "/admin"
+                    : user.isVendor
+                        ? "/dashboard/vendor"
+                        : "/dashboard/buyer";
+                router.replace(fallback);
+                return;
+            }
         }
 
         setChecked(true);

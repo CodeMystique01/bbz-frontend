@@ -1,4 +1,3 @@
-import { cn } from "@/lib/utils";
 import type { HTMLAttributes } from "react";
 
 type BadgeVariant = "default" | "primary" | "success" | "warning" | "error" | "outline";
@@ -7,30 +6,29 @@ interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
     variant?: BadgeVariant;
 }
 
-const variantStyles: Record<BadgeVariant, string> = {
-    default: "bg-gray-100 text-gray-700",
-    primary: "bg-primary-100 text-primary-700",
-    success: "bg-green-100 text-green-700",
-    warning: "bg-amber-100 text-amber-700",
-    error: "bg-red-100 text-red-700",
-    outline: "bg-transparent border border-gray-300 text-gray-600",
+const VARIANT_STYLES: Record<BadgeVariant, React.CSSProperties> = {
+    default: { background: "#f4f4f5", color: "#3f3f46" },
+    primary: { background: "#dbeafe", color: "#1e40af" },
+    success: { background: "#dcfce7", color: "#15803d" },
+    warning: { background: "#fef3c7", color: "#b45309" },
+    error: { background: "#fee2e2", color: "#b91c1c" },
+    outline: { background: "transparent", border: "1px solid #d4d4d8", color: "#52525b" },
 };
 
-export function Badge({
-    variant = "default",
-    className,
-    children,
-    ...props
-}: BadgeProps) {
+const BASE: React.CSSProperties = {
+    display: "inline-flex",
+    alignItems: "center",
+    padding: "2px 10px",
+    borderRadius: 9999,
+    fontSize: 11,
+    fontWeight: 500,
+    lineHeight: 1.8,
+    whiteSpace: "nowrap",
+};
+
+export function Badge({ variant = "default", style, children, ...props }: BadgeProps) {
     return (
-        <span
-            className={cn(
-                "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
-                variantStyles[variant],
-                className
-            )}
-            {...props}
-        >
+        <span style={{ ...BASE, ...VARIANT_STYLES[variant], ...style }} {...props}>
             {children}
         </span>
     );

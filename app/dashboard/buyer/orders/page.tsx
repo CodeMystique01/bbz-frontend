@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Search, Filter } from "lucide-react";
+import { ChevronLeft, ChevronRight, Filter, ShoppingBag, Package } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
 import type { Order, OrderListResponse } from "@/lib/types";
 import { Spinner, Badge } from "@/components/ui";
@@ -48,71 +48,110 @@ export default function BuyerOrdersPage() {
     }
 
     return (
-        <div className="space-y-6 animate-fade-in">
-            <div>
-                <h1 className="text-xl font-semibold text-gray-900">My Orders</h1>
-                <p className="text-xs text-gray-400 mt-0.5">Track and manage your orders</p>
+        <div>
+            {/* Page header */}
+            <div style={{ marginBottom: 28 }}>
+                <h1 style={{ fontSize: 22, fontWeight: 700, color: "#111827", margin: 0 }}>My Orders</h1>
+                <p style={{ fontSize: 14, color: "#9ca3af", marginTop: 4, marginBottom: 0 }}>Track and manage your purchase history</p>
             </div>
 
-            <div className="flex items-center gap-2">
-                <Filter className="h-3.5 w-3.5 text-gray-300" />
-                <select value={status} onChange={(e) => { setStatus(e.target.value); setPage(1); }}
-                    className="px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-xs text-gray-500 focus:outline-none">
-                    {STATUS_OPTIONS.map((opt) => (<option key={opt.value} value={opt.value}>{opt.label}</option>))}
+            {/* Filter bar */}
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
+                <Filter style={{ height: 14, width: 14, color: "#9ca3af" }} />
+                <select
+                    value={status}
+                    onChange={(e) => { setStatus(e.target.value); setPage(1); }}
+                    style={{
+                        padding: "8px 14px", borderRadius: 8, border: "1px solid #e5e7eb",
+                        background: "#fff", fontSize: 13, color: "#374151", cursor: "pointer", outline: "none"
+                    }}
+                >
+                    {STATUS_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                 </select>
             </div>
 
             {isLoading ? (
-                <div className="flex justify-center py-16"><Spinner size="lg" /></div>
+                <div style={{ display: "flex", justifyContent: "center", padding: "64px 0" }}>
+                    <Spinner size="lg" />
+                </div>
             ) : orders.length === 0 ? (
-                <div className="rounded-xl border border-gray-100 p-12 text-center">
-                    <Search className="h-8 w-8 text-gray-200 mx-auto mb-2" />
-                    <p className="text-sm font-medium text-gray-900">No orders found</p>
-                    <p className="text-xs text-gray-400 mt-1">Try adjusting your filters</p>
+                <div style={{
+                    background: "#fff", border: "1px solid #f0f0f0", borderRadius: 16,
+                    padding: "64px 32px", textAlign: "center"
+                }}>
+                    <div style={{
+                        width: 56, height: 56, borderRadius: "50%", background: "#f9fafb",
+                        display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px"
+                    }}>
+                        <ShoppingBag style={{ height: 24, width: 24, color: "#d1d5db" }} />
+                    </div>
+                    <p style={{ fontSize: 15, fontWeight: 600, color: "#111827", margin: "0 0 6px" }}>No orders found</p>
+                    <p style={{ fontSize: 13, color: "#9ca3af", margin: 0 }}>Try adjusting your filters</p>
                 </div>
             ) : (
-                <div className="rounded-xl border border-gray-100 overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                            <thead>
-                                <tr className="border-b border-gray-50 text-left">
-                                    <th className="px-4 py-3 text-[11px] text-gray-400 font-medium uppercase tracking-wider">Order</th>
-                                    <th className="px-4 py-3 text-[11px] text-gray-400 font-medium uppercase tracking-wider">Items</th>
-                                    <th className="px-4 py-3 text-[11px] text-gray-400 font-medium uppercase tracking-wider">Total</th>
-                                    <th className="px-4 py-3 text-[11px] text-gray-400 font-medium uppercase tracking-wider">Status</th>
-                                    <th className="px-4 py-3 text-[11px] text-gray-400 font-medium uppercase tracking-wider">Date</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-50">
-                                {orders.map((order) => (
-                                    <tr key={order.id} className="hover:bg-gray-50/50">
-                                        <td className="px-4 py-3">
-                                            <Link href={`/dashboard/buyer/orders/${order.id}`} className="text-primary-600 hover:text-primary-700 font-mono text-xs">#{order.id.slice(0, 8)}</Link>
-                                        </td>
-                                        <td className="px-4 py-3 text-gray-600 max-w-xs truncate text-xs">
-                                            {order.items?.map((i) => i.product?.name).filter(Boolean).join(", ") || `${order.items?.length || 0} items`}
-                                        </td>
-                                        <td className="px-4 py-3 font-medium text-gray-900 text-xs">{formatPrice(order.totalAmount)}</td>
-                                        <td className="px-4 py-3"><Badge variant={STATUS_COLORS[order.status] || "default"}>{order.status}</Badge></td>
-                                        <td className="px-4 py-3 text-gray-400 text-xs">{formatDate(order.createdAt)}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                <div style={{ background: "#fff", border: "1px solid #f0f0f0", borderRadius: 16, overflow: "hidden" }}>
+                    {/* Table header */}
+                    <div style={{
+                        display: "grid", gridTemplateColumns: "120px 1fr 110px 120px 110px",
+                        padding: "12px 20px", borderBottom: "1px solid #f5f5f5",
+                        background: "#fafafa"
+                    }}>
+                        {["Order ID", "Items", "Total", "Status", "Date"].map(col => (
+                            <span key={col} style={{ fontSize: 11, fontWeight: 600, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                                {col}
+                            </span>
+                        ))}
                     </div>
 
+                    {/* Table rows */}
+                    {orders.map((order, i) => (
+                        <Link
+                            key={order.id}
+                            href={`/dashboard/buyer/orders/${order.id}`}
+                            style={{
+                                display: "grid", gridTemplateColumns: "120px 1fr 110px 120px 110px",
+                                padding: "16px 20px", textDecoration: "none", alignItems: "center",
+                                borderBottom: i < orders.length - 1 ? "1px solid #f5f5f5" : "none",
+                                transition: "background 0.15s"
+                            }}
+                            onMouseEnter={e => (e.currentTarget.style.background = "#fafafa")}
+                            onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                        >
+                            <span style={{ fontSize: 12, fontFamily: "monospace", color: "#2563eb", fontWeight: 500 }}>
+                                #{order.id.slice(0, 8)}
+                            </span>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+                                <Package style={{ height: 14, width: 14, color: "#d1d5db", flexShrink: 0 }} />
+                                <span style={{ fontSize: 13, color: "#374151", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                    {order.items?.map((i) => i.product?.name).filter(Boolean).join(", ") || `${order.items?.length || 0} item(s)`}
+                                </span>
+                            </div>
+                            <span style={{ fontSize: 13, fontWeight: 600, color: "#111827" }}>{formatPrice(order.totalAmount)}</span>
+                            <Badge variant={STATUS_COLORS[order.status] || "default"}>{order.status}</Badge>
+                            <span style={{ fontSize: 12, color: "#9ca3af" }}>{formatDate(order.createdAt)}</span>
+                        </Link>
+                    ))}
+
+                    {/* Pagination */}
                     {totalPages > 1 && (
-                        <div className="flex items-center justify-between px-4 py-2.5 border-t border-gray-50 text-xs">
-                            <span className="text-gray-400">Page {page} of {totalPages}</span>
-                            <div className="flex items-center gap-1">
-                                <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}
-                                    className="p-1 rounded border border-gray-100 text-gray-400 hover:bg-gray-50 disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed">
-                                    <ChevronLeft className="h-3.5 w-3.5" />
-                                </button>
-                                <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-                                    className="p-1 rounded border border-gray-100 text-gray-400 hover:bg-gray-50 disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed">
-                                    <ChevronRight className="h-3.5 w-3.5" />
-                                </button>
+                        <div style={{
+                            display: "flex", alignItems: "center", justifyContent: "space-between",
+                            padding: "12px 20px", borderTop: "1px solid #f5f5f5"
+                        }}>
+                            <span style={{ fontSize: 12, color: "#9ca3af" }}>Page {page} of {totalPages}</span>
+                            <div style={{ display: "flex", gap: 6 }}>
+                                {[
+                                    { icon: ChevronLeft, disabled: page === 1, action: () => setPage(p => Math.max(1, p - 1)) },
+                                    { icon: ChevronRight, disabled: page === totalPages, action: () => setPage(p => Math.min(totalPages, p + 1)) }
+                                ].map(({ icon: Icon, disabled, action }, idx) => (
+                                    <button key={idx} onClick={action} disabled={disabled} style={{
+                                        width: 30, height: 30, borderRadius: 6, border: "1px solid #e5e7eb",
+                                        background: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
+                                        cursor: disabled ? "not-allowed" : "pointer", opacity: disabled ? 0.4 : 1
+                                    }}>
+                                        <Icon style={{ height: 14, width: 14, color: "#6b7280" }} />
+                                    </button>
+                                ))}
                             </div>
                         </div>
                     )}

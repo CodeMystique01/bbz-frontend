@@ -33,7 +33,7 @@ export default function LoginPage() {
             login(res.access_token, res.user);
             toast.success("Welcome back!");
             if (res.user.role === "ADMIN") router.push("/admin");
-            else if (res.user.role === "VENDOR") router.push("/dashboard/vendor");
+            else if (res.user.isVendor) router.push("/dashboard/vendor");
             else router.push("/dashboard/buyer");
         } catch (err: unknown) {
             toast.error(err instanceof Error ? err.message : "Login failed");

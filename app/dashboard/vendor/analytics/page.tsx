@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BarChart3, TrendingUp, Users, ShoppingBag, Calendar } from "lucide-react";
+import { BarChart3, TrendingUp, Users, ShoppingBag, Calendar, Eye, MousePointerClick } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
 import { Spinner } from "@/components/ui";
 import { formatPrice } from "@/lib/utils";
@@ -10,14 +10,17 @@ interface SalesData {
     totalRevenue: number;
     totalOrders: number;
     averageOrderValue: number;
-    dailySales: { date: string; revenue: number; orders: number }[];
+    conversionRate: number;
+    topProducts: { productId: string; productName: string; revenue: number; orders: number }[];
+    revenueByDay: { date: string; revenue: number; orders: number }[];
 }
 
 interface BehaviorData {
-    uniqueCustomers: number;
-    repeatCustomers: number;
-    averageRating: number;
-    conversionRate: number;
+    uniqueVisitors: number;
+    pageViews: number;
+    bounceRate: number;
+    averageSessionDuration: number;
+    conversionFunnel: { step: string; users: number; conversionRate: number }[];
 }
 
 interface AnalyticsResponse {
@@ -53,8 +56,9 @@ export default function VendorAnalyticsPage() {
 
     if (isLoading) return <div className="flex justify-center py-24"><Spinner size="lg" /></div>;
 
-    const sales = analytics?.sales || { totalRevenue: 0, totalOrders: 0, averageOrderValue: 0, dailySales: [] };
-    const behavior = analytics?.behavior || { uniqueCustomers: 0, repeatCustomers: 0, averageRating: 0, conversionRate: 0 };
+    const sales = analytics?.sales ?? { totalRevenue: 0, totalOrders: 0, averageOrderValue: 0, conversionRate: 0, topProducts: [], revenueByDay: [] };
+    const behavior = analytics?.behavior ?? { uniqueVisitors: 0, pageViews: 0, bounceRate: 0, averageSessionDuration: 0, conversionFunnel: [] };
+    const revenueByDay = sales.revenueByDay ?? [];
 
     return (
         <div className="space-y-8 animate-fade-in">
@@ -78,7 +82,7 @@ export default function VendorAnalyticsPage() {
                     { icon: TrendingUp, label: "Revenue", value: formatPrice(sales.totalRevenue), color: "text-green-500" },
                     { icon: ShoppingBag, label: "Orders", value: sales.totalOrders, color: "text-primary-500" },
                     { icon: BarChart3, label: "Avg Order Value", value: formatPrice(sales.averageOrderValue), color: "text-purple-500" },
-                    { icon: Users, label: "Unique Customers", value: behavior.uniqueCustomers, color: "text-amber-500" },
+                    { icon: Users, label: "Unique Visitors", value: behavior.uniqueVisitors, color: "text-amber-500" },
                 ].map((s) => (
                     <div key={s.label} className="rounded-xl border border-gray-100 p-4 hover:border-gray-200 transition-colors">
                         <s.icon className={`h-4 w-4 ${s.color} mb-3`} />
@@ -95,12 +99,12 @@ export default function VendorAnalyticsPage() {
                         <Calendar className="h-4 w-4 text-primary-500" />
                         <h2 className="text-sm font-medium text-gray-900">Daily Sales</h2>
                     </div>
-                    {sales.dailySales.length === 0 ? (
+                    {revenueByDay.length === 0 ? (
                         <div className="p-8 flex items-center justify-center text-xs text-gray-400">No data for this period</div>
                     ) : (
                         <div className="p-4 space-y-2">
-                            {sales.dailySales.slice(-10).map((day) => {
-                                const max = Math.max(...sales.dailySales.map((d) => d.revenue), 1);
+                            {revenueByDay.slice(-10).map((day) => {
+                                const max = Math.max(...revenueByDay.map((d) => d.revenue), 1);
                                 return (
                                     <div key={day.date} className="flex items-center gap-3">
                                         <span className="text-xs text-gray-400 w-16 shrink-0">
@@ -117,23 +121,23 @@ export default function VendorAnalyticsPage() {
                     )}
                 </div>
 
-                {/* Behavior Metrics */}
+                {/* Traffic & Behavior Metrics */}
                 <div className="rounded-xl border border-gray-100">
                     <div className="p-4 border-b border-gray-50">
-                        <h2 className="text-sm font-medium text-gray-900">Customer Insights</h2>
+                        <h2 className="text-sm font-medium text-gray-900">Traffic & Behavior</h2>
                     </div>
                     <div className="p-4 space-y-3">
                         <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                            <span className="text-xs text-gray-500">Repeat Customers</span>
-                            <span className="text-sm font-semibold text-gray-900">{behavior.repeatCustomers}</span>
+                            <span className="text-xs text-gray-500 flex items-center gap-2"><Eye className="h-3.5 w-3.5 text-gray-400" /> Page Views</span>
+                            <span className="text-sm font-semibold text-gray-900">{behavior.pageViews.toLocaleString()}</span>
                         </div>
                         <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                            <span className="text-xs text-gray-500">Average Rating</span>
-                            <span className="text-sm font-semibold text-gray-900">{behavior.averageRating ? behavior.averageRating.toFixed(1) : "—"} ⭐</span>
+                            <span className="text-xs text-gray-500 flex items-center gap-2"><MousePointerClick className="h-3.5 w-3.5 text-gray-400" /> Bounce Rate</span>
+                            <span className="text-sm font-semibold text-gray-900">{behavior.bounceRate.toFixed(1)}%</span>
                         </div>
                         <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                            <span className="text-xs text-gray-500">Conversion Rate</span>
-                            <span className="text-sm font-semibold text-gray-900">{behavior.conversionRate ? (behavior.conversionRate * 100).toFixed(1) : "0"}%</span>
+                            <span className="text-xs text-gray-500 flex items-center gap-2"><TrendingUp className="h-3.5 w-3.5 text-gray-400" /> Conversion Rate</span>
+                            <span className="text-sm font-semibold text-gray-900">{sales.conversionRate.toFixed(1)}%</span>
                         </div>
                     </div>
                 </div>

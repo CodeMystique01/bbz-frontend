@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Package, ShoppingBag, DollarSign, Key, TrendingUp, ArrowRight } from "lucide-react";
+import { Package, ShoppingBag, DollarSign, Key, ArrowRight, TrendingUp } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
 import type { VendorDashboard } from "@/lib/types";
 import { Spinner, Badge } from "@/components/ui";
 import { formatPrice, formatDate } from "@/lib/utils";
 import { toast } from "sonner";
+import { useAuthStore } from "@/store/auth-store";
 
 const STATUS_COLORS: Record<string, "success" | "warning" | "error" | "default"> = {
     CONFIRMED: "success", DELIVERED: "success",
@@ -16,6 +17,7 @@ const STATUS_COLORS: Record<string, "success" | "warning" | "error" | "default">
 };
 
 export default function VendorDashboardPage() {
+    const { user } = useAuthStore();
     const [data, setData] = useState<VendorDashboard | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -26,82 +28,122 @@ export default function VendorDashboardPage() {
         catch { toast.error("Failed to load dashboard"); } finally { setIsLoading(false); }
     }
 
-    if (isLoading) return <div className="flex justify-center py-24"><Spinner size="lg" /></div>;
+    if (isLoading) return (
+        <div style={{ display: "flex", justifyContent: "center", padding: "80px 0" }}>
+            <Spinner size="lg" />
+        </div>
+    );
 
     const stats = data || { totalProducts: 0, totalSales: 0, totalOrders: 0, totalLicenses: 0, topProducts: [], recentOrders: [] };
 
+    const cards = [
+        { icon: Package, label: "Products", value: stats.totalProducts, iconBg: "#eff6ff", iconColor: "#2563eb" },
+        { icon: DollarSign, label: "Revenue", value: formatPrice(stats.totalSales), iconBg: "#f0fdf4", iconColor: "#16a34a" },
+        { icon: ShoppingBag, label: "Orders", value: stats.totalOrders, iconBg: "#fffbeb", iconColor: "#d97706" },
+        { icon: Key, label: "Licenses", value: stats.totalLicenses, iconBg: "#f5f3ff", iconColor: "#7c3aed" },
+    ];
+
     return (
-        <div className="space-y-8 animate-fade-in">
-            <div>
-                <h1 className="text-xl font-semibold text-gray-900">Dashboard</h1>
-                <p className="text-xs text-gray-400 mt-0.5">Overview of your store</p>
+        <div>
+            {/* Header */}
+            <div style={{ marginBottom: 32 }}>
+                <h1 style={{ fontSize: 22, fontWeight: 700, color: "#111827", margin: 0 }}>
+                    Welcome back{user?.name ? `, ${user.name.split(" ")[0]}` : ""}!
+                </h1>
+                <p style={{ fontSize: 14, color: "#9ca3af", marginTop: 4, marginBottom: 0 }}>Here&apos;s an overview of your store</p>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                {[
-                    { icon: Package, label: "Products", value: stats.totalProducts, color: "text-primary-500" },
-                    { icon: DollarSign, label: "Revenue", value: formatPrice(stats.totalSales), color: "text-green-500" },
-                    { icon: ShoppingBag, label: "Orders", value: stats.totalOrders, color: "text-amber-500" },
-                    { icon: Key, label: "Licenses", value: stats.totalLicenses, color: "text-violet-500" },
-                ].map((s) => (
-                    <div key={s.label} className="rounded-xl border border-gray-100 p-4 hover:border-gray-200 transition-colors">
-                        <s.icon className={`h-4 w-4 ${s.color} mb-3`} />
-                        <p className="text-xl font-semibold text-gray-900">{s.value}</p>
-                        <p className="text-[11px] text-gray-400 mt-0.5">{s.label}</p>
+            {/* Stats grid */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, marginBottom: 32 }}>
+                {cards.map((card) => (
+                    <div key={card.label} style={{
+                        background: "#fff", border: "1px solid #f0f0f0", borderRadius: 14,
+                        padding: "20px 24px", display: "flex", alignItems: "center", gap: 16
+                    }}>
+                        <div style={{
+                            width: 44, height: 44, borderRadius: 12, background: card.iconBg,
+                            display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0
+                        }}>
+                            <card.icon style={{ height: 20, width: 20, color: card.iconColor }} />
+                        </div>
+                        <div>
+                            <p style={{ fontSize: 22, fontWeight: 700, color: "#111827", margin: 0 }}>{card.value}</p>
+                            <p style={{ fontSize: 12, color: "#9ca3af", marginTop: 2, marginBottom: 0 }}>{card.label}</p>
+                        </div>
                     </div>
                 ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            {/* Two panels: Top Products + Recent Orders */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+
                 {/* Top Products */}
-                <div className="rounded-xl border border-gray-100">
-                    <div className="flex items-center justify-between p-4 border-b border-gray-50">
-                        <h2 className="text-sm font-medium text-gray-900">Top Products</h2>
-                        <Link href="/dashboard/vendor/products" className="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1">View All <ArrowRight className="h-3 w-3" /></Link>
-                    </div>
-                    {stats.topProducts.length === 0 ? (
-                        <div className="p-8 text-center"><Package className="h-8 w-8 text-gray-200 mx-auto mb-2" /><p className="text-xs text-gray-400">No products yet</p></div>
-                    ) : (
-                        <div className="divide-y divide-gray-50">
-                            {stats.topProducts.slice(0, 5).map((p, i) => (
-                                <div key={i} className="flex items-center justify-between p-4">
-                                    <div className="flex items-center gap-3 min-w-0">
-                                        <span className="text-[11px] text-gray-300 w-4">{i + 1}.</span>
-                                        <p className="text-sm text-gray-900 truncate">{p.name}</p>
-                                    </div>
-                                    <div className="flex items-center gap-3 shrink-0 ml-4">
-                                        <span className="text-xs text-gray-400">{p.totalSold} sold</span>
-                                        <span className="text-xs font-medium text-gray-900">{formatPrice(p.revenue)}</span>
-                                    </div>
-                                </div>
-                            ))}
+                <div style={{ background: "#fff", border: "1px solid #f0f0f0", borderRadius: 16, overflow: "hidden" }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 24px", borderBottom: "1px solid #f5f5f5" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            <TrendingUp style={{ height: 15, width: 15, color: "#9ca3af" }} />
+                            <h2 style={{ fontSize: 14, fontWeight: 600, color: "#111827", margin: 0 }}>Top Products</h2>
                         </div>
+                        <Link href="/dashboard/vendor/products" style={{ fontSize: 12, color: "#2563eb", textDecoration: "none", display: "flex", alignItems: "center", gap: 3, fontWeight: 500 }}>
+                            View all <ArrowRight style={{ height: 12, width: 12 }} />
+                        </Link>
+                    </div>
+                    {(stats.topProducts?.length ?? 0) === 0 ? (
+                        <div style={{ padding: "48px 24px", textAlign: "center" }}>
+                            <Package style={{ height: 28, width: 28, color: "#e5e7eb", margin: "0 auto 10px" }} />
+                            <p style={{ fontSize: 13, color: "#9ca3af", margin: 0 }}>No products yet</p>
+                        </div>
+                    ) : (
+                        stats.topProducts.slice(0, 5).map((p, i) => (
+                            <div key={i} style={{
+                                display: "flex", alignItems: "center", justifyContent: "space-between",
+                                padding: "14px 24px", borderBottom: i < 4 ? "1px solid #f5f5f5" : "none"
+                            }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+                                    <span style={{ fontSize: 11, color: "#d1d5db", width: 16, flexShrink: 0 }}>{i + 1}.</span>
+                                    <p style={{ fontSize: 13, color: "#374151", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.name}</p>
+                                </div>
+                                <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0, marginLeft: 12 }}>
+                                    <span style={{ fontSize: 11, color: "#9ca3af" }}>{p.totalSold} sold</span>
+                                    <span style={{ fontSize: 13, fontWeight: 600, color: "#111827" }}>{formatPrice(p.revenue)}</span>
+                                </div>
+                            </div>
+                        ))
                     )}
                 </div>
 
                 {/* Recent Orders */}
-                <div className="rounded-xl border border-gray-100">
-                    <div className="flex items-center justify-between p-4 border-b border-gray-50">
-                        <h2 className="text-sm font-medium text-gray-900">Recent Orders</h2>
-                        <Link href="/dashboard/vendor/orders" className="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1">View All <ArrowRight className="h-3 w-3" /></Link>
-                    </div>
-                    {stats.recentOrders.length === 0 ? (
-                        <div className="p-8 text-center"><ShoppingBag className="h-8 w-8 text-gray-200 mx-auto mb-2" /><p className="text-xs text-gray-400">No orders yet</p></div>
-                    ) : (
-                        <div className="divide-y divide-gray-50">
-                            {stats.recentOrders.slice(0, 5).map((order) => (
-                                <div key={order.id} className="flex items-center justify-between p-4">
-                                    <div className="min-w-0">
-                                        <p className="text-sm text-gray-900 truncate">{order.buyerEmail}</p>
-                                        <p className="text-[11px] text-gray-300 mt-0.5">{formatDate(order.date)}</p>
-                                    </div>
-                                    <div className="flex items-center gap-2 shrink-0 ml-4">
-                                        <Badge variant={STATUS_COLORS[order.status] || "default"}>{order.status}</Badge>
-                                        <span className="text-xs font-medium text-gray-900">{formatPrice(order.totalAmount)}</span>
-                                    </div>
-                                </div>
-                            ))}
+                <div style={{ background: "#fff", border: "1px solid #f0f0f0", borderRadius: 16, overflow: "hidden" }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 24px", borderBottom: "1px solid #f5f5f5" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            <ShoppingBag style={{ height: 15, width: 15, color: "#9ca3af" }} />
+                            <h2 style={{ fontSize: 14, fontWeight: 600, color: "#111827", margin: 0 }}>Recent Orders</h2>
                         </div>
+                        <Link href="/dashboard/vendor/orders" style={{ fontSize: 12, color: "#2563eb", textDecoration: "none", display: "flex", alignItems: "center", gap: 3, fontWeight: 500 }}>
+                            View all <ArrowRight style={{ height: 12, width: 12 }} />
+                        </Link>
+                    </div>
+                    {(stats.recentOrders?.length ?? 0) === 0 ? (
+                        <div style={{ padding: "48px 24px", textAlign: "center" }}>
+                            <ShoppingBag style={{ height: 28, width: 28, color: "#e5e7eb", margin: "0 auto 10px" }} />
+                            <p style={{ fontSize: 13, color: "#9ca3af", margin: 0 }}>No orders yet</p>
+                        </div>
+                    ) : (
+                        stats.recentOrders.slice(0, 5).map((order, i) => (
+                            <div key={order.id} style={{
+                                display: "flex", alignItems: "center", justifyContent: "space-between",
+                                padding: "14px 24px", borderBottom: i < 4 ? "1px solid #f5f5f5" : "none"
+                            }}>
+                                <div style={{ minWidth: 0 }}>
+                                    <p style={{ fontSize: 13, color: "#374151", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{order.buyerEmail}</p>
+                                    <p style={{ fontSize: 11, color: "#9ca3af", margin: "3px 0 0" }}>{formatDate(order.date)}</p>
+                                </div>
+                                <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0, marginLeft: 12 }}>
+                                    <Badge variant={STATUS_COLORS[order.status] || "default"}>{order.status}</Badge>
+                                    <span style={{ fontSize: 13, fontWeight: 600, color: "#111827" }}>{formatPrice(order.totalAmount)}</span>
+                                </div>
+                            </div>
+                        ))
                     )}
                 </div>
             </div>
