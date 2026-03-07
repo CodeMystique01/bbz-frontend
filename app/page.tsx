@@ -11,6 +11,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { apiClient } from "@/lib/api-client";
 import type { Product, ProductListResponse } from "@/lib/types";
+import { useAuthStore } from "@/store/auth-store";
 
 /* ── Shared container style ─────────────────────────────── */
 const container: React.CSSProperties = {
@@ -44,6 +45,7 @@ function inr(n: number) {
 }
 
 export default function HomePage() {
+  const { isAuthenticated, user } = useAuthStore();
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [totalProducts, setTotalProducts] = useState(0);
   const [isLoadingProducts, setIsLoadingProducts] = useState(true);
@@ -563,24 +565,64 @@ export default function HomePage() {
               </ul>
 
               <div style={{ display: "flex", gap: 12 }}>
-                <Link
-                  href="/signup"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 8,
-                    height: 48,
-                    padding: "0 28px",
-                    background: "#ffffff",
-                    color: "#111827",
-                    fontSize: 14,
-                    fontWeight: 600,
-                    borderRadius: 12,
-                    textDecoration: "none",
-                  }}
-                >
-                  Become a Vendor <ArrowRight style={{ width: 16, height: 16 }} />
-                </Link>
+                {!isAuthenticated ? (
+                  <Link
+                    href="/signup"
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 8,
+                      height: 48,
+                      padding: "0 28px",
+                      background: "#ffffff",
+                      color: "#111827",
+                      fontSize: 14,
+                      fontWeight: 600,
+                      borderRadius: 12,
+                      textDecoration: "none",
+                    }}
+                  >
+                    Become a Vendor <ArrowRight style={{ width: 16, height: 16 }} />
+                  </Link>
+                ) : user?.isVendor ? (
+                  <Link
+                    href="/dashboard/vendor"
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 8,
+                      height: 48,
+                      padding: "0 28px",
+                      background: "#ffffff",
+                      color: "#111827",
+                      fontSize: 14,
+                      fontWeight: 600,
+                      borderRadius: 12,
+                      textDecoration: "none",
+                    }}
+                  >
+                    Vendor Dashboard <ArrowRight style={{ width: 16, height: 16 }} />
+                  </Link>
+                ) : (
+                  <Link
+                    href="/dashboard/buyer/profile"
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 8,
+                      height: 48,
+                      padding: "0 28px",
+                      background: "#ffffff",
+                      color: "#111827",
+                      fontSize: 14,
+                      fontWeight: 600,
+                      borderRadius: 12,
+                      textDecoration: "none",
+                    }}
+                  >
+                    Activate Vendor Role <ArrowRight style={{ width: 16, height: 16 }} />
+                  </Link>
+                )}
                 <Link
                   href="/products"
                   style={{
@@ -671,24 +713,45 @@ export default function HomePage() {
             Join thousands of buyers and creators on India&apos;s most trusted digital product marketplace.
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
-            <Link
-              href="/signup"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 8,
-                height: 48,
-                padding: "0 28px",
-                background: "#2563eb",
-                color: "#ffffff",
-                fontSize: 14,
-                fontWeight: 600,
-                borderRadius: 12,
-                textDecoration: "none",
-              }}
-            >
-              Create Free Account <ArrowRight style={{ width: 16, height: 16 }} />
-            </Link>
+            {!isAuthenticated ? (
+              <Link
+                href="/signup"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
+                  height: 48,
+                  padding: "0 28px",
+                  background: "#2563eb",
+                  color: "#ffffff",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  borderRadius: 12,
+                  textDecoration: "none",
+                }}
+              >
+                Create Free Account <ArrowRight style={{ width: 16, height: 16 }} />
+              </Link>
+            ) : (
+              <Link
+                href={user?.role === "ADMIN" ? "/admin" : user?.isVendor ? "/dashboard/vendor" : "/dashboard/buyer"}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
+                  height: 48,
+                  padding: "0 28px",
+                  background: "#2563eb",
+                  color: "#ffffff",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  borderRadius: 12,
+                  textDecoration: "none",
+                }}
+              >
+                Go to Dashboard <ArrowRight style={{ width: 16, height: 16 }} />
+              </Link>
+            )}
             <Link
               href="/products"
               style={{
