@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { Store } from "lucide-react";
+import { PageContainer } from "./PageContainer";
 
 export function Footer() {
     return (
         <footer className="bg-gray-900 text-gray-400">
-            <div style={{ maxWidth: 1100, marginLeft: "auto", marginRight: "auto", paddingLeft: 24, paddingRight: 24, paddingTop: 56, paddingBottom: 56 }}>
+            <PageContainer style={{ paddingTop: 56, paddingBottom: 56 }}>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
                     <div className="col-span-2 md:col-span-1">
                         <Link href="/" className="flex items-center gap-2 mb-4">
@@ -53,7 +54,7 @@ export function Footer() {
                         <span>Powered by Razorpay</span>
                     </div>
                 </div>
-            </div>
+            </PageContainer>
         </footer>
     );
 }

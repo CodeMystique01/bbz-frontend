@@ -40,7 +40,7 @@ export default function BuyerProfilePage() {
     const initials = (form.name || form.email || "U").charAt(0).toUpperCase();
 
     return (
-        <div style={{ maxWidth: 640 }}>
+        <div>
             {/* Page header */}
             <div style={{ marginBottom: 32 }}>
                 <h1 style={{ fontSize: 22, fontWeight: 700, color: "#111827", margin: 0 }}>My Profile</h1>

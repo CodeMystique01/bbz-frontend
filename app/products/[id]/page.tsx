@@ -7,7 +7,7 @@ import { apiClient } from "@/lib/api-client";
 import type { Product, Review } from "@/lib/types";
 import { useCartStore } from "@/store/cart-store";
 import { useAuthStore } from "@/store/auth-store";
-import { Navbar } from "@/components/layout";
+import { Navbar, PageContainer } from "@/components/layout";
 import { Footer } from "@/components/layout/Footer";
 import { Button, Spinner, Badge } from "@/components/ui";
 import { formatPrice, formatDate } from "@/lib/utils";
@@ -116,7 +116,7 @@ export default function ProductDetailPage() {
         <div className="min-h-screen flex flex-col bg-white">
             <Navbar />
 
-            <div style={{ flex: 1, maxWidth: 1100, marginLeft: "auto", marginRight: "auto", width: "100%", paddingLeft: 24, paddingRight: 24, paddingTop: 32, paddingBottom: 48 }}>
+            <PageContainer style={{ flex: 1, width: "100%", paddingTop: 32, paddingBottom: 48 }}>
                 <button
                     onClick={() => router.back()}
                     className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 mb-6 cursor-pointer"
@@ -275,7 +275,7 @@ export default function ProductDetailPage() {
                         </div>
                     )}
                 </div>
-            </div>
+            </PageContainer>
 
             <Footer />
         </div>

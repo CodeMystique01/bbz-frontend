@@ -19,6 +19,9 @@ export interface Product {
     fileUrl?: string | null;
     category?: string | null;
     vendorId: string;
+    deliveryType?: "EXTERNAL_URL" | "DOWNLOAD" | "LICENSE_ONLY";
+    accessUrl?: string | null;
+    deliveryInstructions?: string | null;
     approvalStatus: "PENDING" | "APPROVED" | "REJECTED";
     isActive: boolean;
     averageRating?: number | null;

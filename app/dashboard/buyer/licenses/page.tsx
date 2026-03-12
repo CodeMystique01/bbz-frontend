@@ -1,17 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Key, Package, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { Key, Package, Search, ChevronLeft, ChevronRight, Globe, Download } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
 import { Spinner, Badge } from "@/components/ui";
 import { formatDate } from "@/lib/utils";
 
 interface License {
     id: string;
-    licenseKey: string;
+    key: string;
     assigned: boolean;
     assignedAt: string | null;
-    product: { id: string; name: string; imageUrl: string | null };
+    product: {
+        id: string;
+        name: string;
+        imageUrl: string | null;
+        deliveryType?: "EXTERNAL_URL" | "DOWNLOAD" | "LICENSE_ONLY";
+        accessUrl?: string | null;
+        fileUrl?: string | null;
+    };
     createdAt: string;
 }
 
@@ -66,6 +73,7 @@ export default function BuyerLicensesPage() {
                                     <th className="px-4 py-3 text-[11px] text-gray-400 font-medium uppercase tracking-wider">Product</th>
                                     <th className="px-4 py-3 text-[11px] text-gray-400 font-medium uppercase tracking-wider">License Key</th>
                                     <th className="px-4 py-3 text-[11px] text-gray-400 font-medium uppercase tracking-wider">Status</th>
+                                    <th className="px-4 py-3 text-[11px] text-gray-400 font-medium uppercase tracking-wider">Access</th>
                                     <th className="px-4 py-3 text-[11px] text-gray-400 font-medium uppercase tracking-wider">Assigned</th>
                                 </tr>
                             </thead>
@@ -84,10 +92,25 @@ export default function BuyerLicensesPage() {
                                             </div>
                                         </td>
                                         <td className="px-4 py-3">
-                                            <code className="px-2 py-1 bg-gray-50 rounded text-xs font-mono text-gray-700 select-all">{lic.licenseKey}</code>
+                                            <code className="px-2 py-1 bg-gray-50 rounded text-xs font-mono text-gray-700 select-all">{lic.key}</code>
                                         </td>
                                         <td className="px-4 py-3">
                                             <Badge variant={lic.assigned ? "success" : "warning"}>{lic.assigned ? "Active" : "Pending"}</Badge>
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            {lic.product.deliveryType === "EXTERNAL_URL" && lic.product.accessUrl ? (
+                                                <a href={lic.product.accessUrl} target="_blank" rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-1 px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-md text-xs font-medium hover:bg-indigo-100 transition-colors">
+                                                    <Globe className="h-3 w-3" /> Open
+                                                </a>
+                                            ) : lic.product.deliveryType === "DOWNLOAD" && lic.product.fileUrl ? (
+                                                <a href={lic.product.fileUrl} target="_blank" rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-1 px-2.5 py-1 bg-green-50 text-green-700 rounded-md text-xs font-medium hover:bg-green-100 transition-colors">
+                                                    <Download className="h-3 w-3" /> Download
+                                                </a>
+                                            ) : (
+                                                <span className="text-xs text-gray-300">—</span>
+                                            )}
                                         </td>
                                         <td className="px-4 py-3 text-gray-400 text-xs">{lic.assignedAt ? formatDate(lic.assignedAt) : "—"}</td>
                                     </tr>

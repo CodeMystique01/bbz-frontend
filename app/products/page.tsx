@@ -5,7 +5,7 @@ import { Search, SlidersHorizontal, X, ChevronLeft, ChevronRight } from "lucide-
 import { apiClient } from "@/lib/api-client";
 import type { Product, ProductListResponse } from "@/lib/types";
 import { ProductCard } from "@/components/products/ProductCard";
-import { Navbar } from "@/components/layout";
+import { Navbar, PageContainer } from "@/components/layout";
 import { Footer } from "@/components/layout/Footer";
 import { Spinner } from "@/components/ui";
 
@@ -103,7 +103,7 @@ export default function ProductsPage() {
 
             {/* Search Header */}
             <div style={{ borderBottom: "1px solid #f3f4f6" }}>
-                <div style={{ maxWidth: 1100, marginLeft: "auto", marginRight: "auto", paddingLeft: 24, paddingRight: 24, paddingTop: 40, paddingBottom: 40 }}>
+                <PageContainer style={{ paddingTop: 40, paddingBottom: 40 }}>
                     <h1 style={{ fontSize: 20, fontWeight: 600, color: "#111827", marginBottom: 4 }}>Products</h1>
                     <p style={{ fontSize: 13, color: "#9ca3af", marginBottom: 20 }}>Discover premium digital products from verified vendors</p>
 
@@ -148,11 +148,11 @@ export default function ProductsPage() {
                             Search
                         </button>
                     </form>
-                </div>
+                </PageContainer>
             </div>
 
             {/* Main Content */}
-            <div style={{ flex: 1, maxWidth: 1100, marginLeft: "auto", marginRight: "auto", paddingLeft: 24, paddingRight: 24, paddingTop: 24, paddingBottom: 48, width: "100%" }}>
+            <PageContainer style={{ flex: 1, paddingTop: 24, paddingBottom: 48, width: "100%" }}>
                 {/* Toolbar */}
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -315,7 +315,7 @@ export default function ProductsPage() {
                         )}
                     </div>
                 </div>
-            </div>
+            </PageContainer>
 
             <Footer />
         </div>

@@ -17,6 +17,7 @@ import {
 import { useAuthStore } from "@/store/auth-store";
 import { useCartStore } from "@/store/cart-store";
 import { Avatar } from "@/components/ui";
+import { PageContainer } from "./PageContainer";
 
 export function Navbar() {
     const router = useRouter();
@@ -71,7 +72,7 @@ export function Navbar() {
                 borderBottom: "1px solid #f3f4f6",
             }}
         >
-            <nav style={{ maxWidth: 1100, marginLeft: "auto", marginRight: "auto", paddingLeft: 24, paddingRight: 24 }}>
+            <PageContainer as="nav">
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 56 }}>
                     {/* Logo */}
                     <Link href="/" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none", flexShrink: 0 }}>
@@ -338,7 +339,7 @@ export function Navbar() {
                         </div>
                     </div>
                 )}
-            </nav>
+            </PageContainer>
         </header>
     );
 }

@@ -6,7 +6,7 @@ import { ShieldCheck, CreditCard, CheckCircle2, Package } from "lucide-react";
 import { useCartStore } from "@/store/cart-store";
 import { useAuthStore } from "@/store/auth-store";
 import { apiClient } from "@/lib/api-client";
-import { Navbar } from "@/components/layout";
+import { Navbar, PageContainer } from "@/components/layout";
 import { Footer } from "@/components/layout/Footer";
 import { Button, Spinner } from "@/components/ui";
 import { formatPrice } from "@/lib/utils";
@@ -190,7 +190,7 @@ export default function CheckoutPage() {
         <div className="min-h-screen flex flex-col bg-white">
             <Navbar />
 
-            <div className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+            <PageContainer className="flex-1 py-8" style={{ width: "100%" }}>
                 <h1 className="text-xl font-semibold text-gray-900 mb-8">Checkout</h1>
 
                 {items.length === 0 ? (
@@ -257,7 +257,7 @@ export default function CheckoutPage() {
                         </div>
                     </div>
                 )}
-            </div>
+            </PageContainer>
 
             <Footer />
         </div>

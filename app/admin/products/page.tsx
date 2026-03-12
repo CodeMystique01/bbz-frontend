@@ -75,6 +75,7 @@ export default function AdminProductsPage() {
                                     <th className="px-4 py-3 text-[11px] text-gray-400 font-medium uppercase tracking-wider">Product</th>
                                     <th className="px-4 py-3 text-[11px] text-gray-400 font-medium uppercase tracking-wider">Vendor</th>
                                     <th className="px-4 py-3 text-[11px] text-gray-400 font-medium uppercase tracking-wider">Price</th>
+                                    <th className="px-4 py-3 text-[11px] text-gray-400 font-medium uppercase tracking-wider">Delivery</th>
                                     <th className="px-4 py-3 text-[11px] text-gray-400 font-medium uppercase tracking-wider">Status</th>
                                     <th className="px-4 py-3 text-[11px] text-gray-400 font-medium uppercase tracking-wider">Submitted</th>
                                     {view === "pending" && <th className="px-4 py-3 text-[11px] text-gray-400 font-medium uppercase tracking-wider">Actions</th>}
@@ -95,6 +96,16 @@ export default function AdminProductsPage() {
                                         </td>
                                         <td className="px-4 py-3 text-gray-400 text-xs">{product.vendor?.name || product.vendor?.email || "—"}</td>
                                         <td className="px-4 py-3 font-medium text-gray-900 text-xs">{formatPrice(product.price)}</td>
+                                        <td className="px-4 py-3">
+                                            <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium ${
+                                                product.deliveryType === "EXTERNAL_URL" ? "bg-indigo-50 text-indigo-700" :
+                                                product.deliveryType === "DOWNLOAD" ? "bg-green-50 text-green-700" :
+                                                "bg-gray-50 text-gray-600"
+                                            }`}>
+                                                {product.deliveryType === "EXTERNAL_URL" ? "URL" :
+                                                 product.deliveryType === "DOWNLOAD" ? "Download" : "Key"}
+                                            </span>
+                                        </td>
                                         <td className="px-4 py-3"><Badge variant={APPROVAL_COLORS[product.approvalStatus] || "default"}>{product.approvalStatus}</Badge></td>
                                         <td className="px-4 py-3 text-gray-400 text-xs">{formatDate(product.createdAt)}</td>
                                         {view === "pending" && (

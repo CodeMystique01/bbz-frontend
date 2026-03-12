@@ -22,7 +22,7 @@ export function DashboardLayout({ sidebar, mobileSidebar, children }: DashboardL
                     flex: 1,
                     display: "flex",
                     width: "100%",
-                    maxWidth: 1200,
+                    maxWidth: 1100,
                     marginLeft: "auto",
                     marginRight: "auto",
                     paddingLeft: 24,

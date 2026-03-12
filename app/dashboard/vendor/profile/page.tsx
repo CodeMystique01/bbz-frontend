@@ -38,7 +38,7 @@ export default function VendorProfilePage() {
     );
 
     return (
-        <div style={{ maxWidth: 640 }}>
+        <div>
             {/* Page header */}
             <div style={{ marginBottom: 32 }}>
                 <h1 style={{ fontSize: 22, fontWeight: 700, color: "#111827", margin: 0 }}>Vendor Profile</h1>

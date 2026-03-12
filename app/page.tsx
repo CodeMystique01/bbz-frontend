@@ -9,18 +9,10 @@ import {
 } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { PageContainer } from "@/components/layout/PageContainer";
 import { apiClient } from "@/lib/api-client";
 import type { Product, ProductListResponse } from "@/lib/types";
 import { useAuthStore } from "@/store/auth-store";
-
-/* ── Shared container style ─────────────────────────────── */
-const container: React.CSSProperties = {
-  maxWidth: 1100,
-  marginLeft: "auto",
-  marginRight: "auto",
-  paddingLeft: 24,
-  paddingRight: 24,
-};
 
 /* ── Static Data (marketing / UI config) ─────────────────── */
 const CATEGORIES = [
@@ -86,7 +78,7 @@ export default function HomePage() {
           overflow: "hidden",
         }}
       >
-        <div style={{ ...container, textAlign: "center", position: "relative", zIndex: 1 }}>
+        <PageContainer style={{ textAlign: "center", position: "relative", zIndex: 1 }}>
           {/* Badge */}
           <div
             style={{
@@ -194,12 +186,12 @@ export default function HomePage() {
               </span>
             ))}
           </div>
-        </div>
+        </PageContainer>
       </section>
 
       {/* ═══════════════════ STATS ═══════════════════ */}
       <section style={{ borderBottom: "1px solid #f3f4f6", padding: "24px 0" }}>
-        <div style={{ ...container }}>
+        <PageContainer>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
             {[
               { label: "Digital Products", value: totalProducts > 0 ? `${totalProducts.toLocaleString("en-IN")}+` : "—", icon: Package },
@@ -230,12 +222,12 @@ export default function HomePage() {
               </div>
             ))}
           </div>
-        </div>
+        </PageContainer>
       </section>
 
       {/* ═══════════════════ CATEGORIES ═══════════════════ */}
       <section style={{ padding: "64px 0" }}>
-        <div style={{ ...container }}>
+        <PageContainer>
           <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 32 }}>
             <div>
               <h2 style={{ fontSize: 26, fontWeight: 700, color: "#111827", margin: 0 }}>Browse by Category</h2>
@@ -271,12 +263,12 @@ export default function HomePage() {
               </Link>
             ))}
           </div>
-        </div>
+        </PageContainer>
       </section>
 
       {/* ═══════════════════ TOP PRODUCTS ═══════════════════ */}
       <section style={{ padding: "64px 0", background: "#f9fafb" }}>
-        <div style={{ ...container }}>
+        <PageContainer>
           <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 32 }}>
             <div>
               <span
@@ -425,12 +417,12 @@ export default function HomePage() {
               ))}
             </div>
           )}
-        </div>
+        </PageContainer>
       </section>
 
       {/* ═══════════════════ HOW IT WORKS ═══════════════════ */}
       <section style={{ padding: "72px 0" }}>
-        <div style={{ ...container, textAlign: "center" }}>
+        <PageContainer style={{ textAlign: "center" }}>
           <h2 style={{ fontSize: 26, fontWeight: 700, color: "#111827", margin: 0 }}>How It Works</h2>
           <p style={{ marginTop: 8, fontSize: 14, color: "#9ca3af" }}>Get started in three simple steps</p>
 
@@ -463,12 +455,12 @@ export default function HomePage() {
               </div>
             ))}
           </div>
-        </div>
+        </PageContainer>
       </section>
 
       {/* ═══════════════════ TESTIMONIALS ═══════════════════ */}
       <section style={{ padding: "64px 0", background: "#f9fafb" }}>
-        <div style={{ ...container }}>
+        <PageContainer>
           <div style={{ textAlign: "center", marginBottom: 40 }}>
             <h2 style={{ fontSize: 26, fontWeight: 700, color: "#111827", margin: 0 }}>Loved by Creators & Buyers</h2>
             <p style={{ marginTop: 8, fontSize: 14, color: "#9ca3af" }}>See what our community has to say</p>
@@ -518,12 +510,12 @@ export default function HomePage() {
               </div>
             ))}
           </div>
-        </div>
+        </PageContainer>
       </section>
 
       {/* ═══════════════════ VENDOR CTA ═══════════════════ */}
       <section style={{ padding: "80px 0", background: "#111827" }}>
-        <div style={{ ...container }}>
+        <PageContainer>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center" }}>
             {/* Left */}
             <div>
@@ -700,12 +692,12 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-        </div>
+        </PageContainer>
       </section>
 
       {/* ═══════════════════ FINAL CTA ═══════════════════ */}
       <section style={{ padding: "72px 0" }}>
-        <div style={{ ...container, textAlign: "center", maxWidth: 600 }}>
+        <PageContainer style={{ textAlign: "center", maxWidth: 600 }}>
           <h2 style={{ fontSize: 26, fontWeight: 700, color: "#111827", margin: "0 0 12px" }}>
             Ready to find your next great tool?
           </h2>
@@ -772,7 +764,7 @@ export default function HomePage() {
               Explore Marketplace
             </Link>
           </div>
-        </div>
+        </PageContainer>
       </section>
 
       <Footer />

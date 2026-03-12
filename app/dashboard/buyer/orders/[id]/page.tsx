@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Package, CreditCard, Clock, CheckCircle, FileText } from "lucide-react";
+import { ArrowLeft, Package, CreditCard, Clock, CheckCircle, FileText, Globe, Download, Key } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
 import type { Order } from "@/lib/types";
 import { Spinner, Badge, Button } from "@/components/ui";
@@ -86,22 +86,70 @@ export default function OrderDetailPage() {
                         </div>
                         <div className="divide-y divide-gray-100">
                             {order.items?.map((item) => (
-                                <div key={item.id} className="flex items-center gap-4 p-5">
-                                    <div className="w-14 h-14 rounded-lg bg-gray-100 overflow-hidden shrink-0">
-                                        <img
-                                            src={item.product?.imageUrl || "/placeholder-product.png"}
-                                            alt={item.product?.name || "Product"}
-                                            className="w-full h-full object-cover"
-                                            onError={(e) => {
-                                                (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect fill='%23f1f5f9' width='200' height='200'/%3E%3Ctext fill='%2394a3b8' font-family='sans-serif' font-size='12' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3ENo Image%3C/text%3E%3C/svg%3E";
-                                            }}
-                                        />
+                                <div key={item.id} className="p-5">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-14 h-14 rounded-lg bg-gray-100 overflow-hidden shrink-0">
+                                            <img
+                                                src={item.product?.imageUrl || "/placeholder-product.png"}
+                                                alt={item.product?.name || "Product"}
+                                                className="w-full h-full object-cover"
+                                                onError={(e) => {
+                                                    (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect fill='%23f1f5f9' width='200' height='200'/%3E%3Ctext fill='%2394a3b8' font-family='sans-serif' font-size='12' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3ENo Image%3C/text%3E%3C/svg%3E";
+                                                }}
+                                            />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="font-medium text-gray-900 text-sm">{item.product?.name || "Product"}</p>
+                                            <p className="text-xs text-gray-400 mt-0.5">Qty: {item.quantity} × {formatPrice(item.price)}</p>
+                                        </div>
+                                        <p className="font-semibold text-gray-900 text-sm">{formatPrice(item.price * item.quantity)}</p>
                                     </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="font-medium text-gray-900 text-sm">{item.product?.name || "Product"}</p>
-                                        <p className="text-xs text-gray-400 mt-0.5">Qty: {item.quantity} × {formatPrice(item.price)}</p>
-                                    </div>
-                                    <p className="font-semibold text-gray-900 text-sm">{formatPrice(item.price * item.quantity)}</p>
+
+                                    {(order.status === "CONFIRMED" || order.status === "DELIVERED") && (
+                                        <div className="mt-3 ml-[4.5rem] space-y-2">
+                                            {item.product?.deliveryType === "EXTERNAL_URL" && item.product?.accessUrl && (
+                                                <a
+                                                    href={item.product.accessUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-medium hover:bg-indigo-100 transition-colors"
+                                                >
+                                                    <Globe className="h-3.5 w-3.5" /> Access Product
+                                                </a>
+                                            )}
+                                            {item.product?.deliveryType === "DOWNLOAD" && item.product?.fileUrl && (
+                                                <a
+                                                    href={item.product.fileUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-50 text-green-700 rounded-lg text-xs font-medium hover:bg-green-100 transition-colors"
+                                                >
+                                                    <Download className="h-3.5 w-3.5" /> Download
+                                                </a>
+                                            )}
+                                            {item.product?.deliveryType === "LICENSE_ONLY" && (
+                                                <button
+                                                    onClick={() => router.push("/dashboard/buyer/licenses")}
+                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 text-amber-700 rounded-lg text-xs font-medium hover:bg-amber-100 transition-colors cursor-pointer"
+                                                >
+                                                    <Key className="h-3.5 w-3.5" /> View License Key
+                                                </button>
+                                            )}
+                                            {!item.product?.deliveryType && (
+                                                <button
+                                                    onClick={() => router.push("/dashboard/buyer/licenses")}
+                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 text-gray-600 rounded-lg text-xs font-medium hover:bg-gray-100 transition-colors cursor-pointer"
+                                                >
+                                                    <Key className="h-3.5 w-3.5" /> View License Key
+                                                </button>
+                                            )}
+                                            {item.product?.deliveryInstructions && (
+                                                <p className="text-xs text-gray-500 bg-gray-50 rounded-lg px-3 py-2">
+                                                    {item.product.deliveryInstructions}
+                                                </p>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
