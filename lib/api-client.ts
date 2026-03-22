@@ -60,6 +60,15 @@ async function request<T>(
         headers,
     });
 
+    const isAuthEndpoint = endpoint.includes("/api/auth/");
+    if (res.status === 401 && !isAuthEndpoint) {
+        if (typeof window !== "undefined") {
+            localStorage.removeItem("auth-storage");
+            window.location.href = "/login";
+        }
+        throw new ApiClientError({ message: "Session expired. Please log in again.", status: 401 });
+    }
+
     if (!res.ok) {
         let errorData: { message?: string; error?: string } = {};
         try {
