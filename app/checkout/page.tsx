@@ -190,7 +190,7 @@ export default function CheckoutPage() {
         <div className="min-h-screen flex flex-col bg-white">
             <Navbar />
 
-            <PageContainer className="flex-1 py-8" style={{ width: "100%" }}>
+            <PageContainer className="flex-1 py-8">
                 <h1 className="text-xl font-semibold text-gray-900 mb-8">Checkout</h1>
 
                 {items.length === 0 ? (

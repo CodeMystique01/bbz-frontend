@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import {
     LayoutDashboard, ShoppingBag, Heart, MessageSquare, Key,
     Package, Plus, DollarSign, BarChart3, Users, Shield, CreditCard,
-    User, Wallet,
+    User, Wallet, FileText,
     type LucideIcon,
 } from "lucide-react";
 
@@ -105,6 +105,7 @@ const adminItems: SidebarItem[] = [
     { label: "Products", href: "/admin/products", icon: Package },
     { label: "Orders", href: "/admin/orders", icon: ShoppingBag },
     { label: "Payouts", href: "/admin/payouts", icon: CreditCard },
+    { label: "Blog", href: "/admin/blog", icon: FileText },
     { label: "Compliance", href: "/admin/compliance", icon: Shield },
 ];
 

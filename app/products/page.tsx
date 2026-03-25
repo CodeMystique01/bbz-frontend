@@ -152,7 +152,7 @@ export default function ProductsPage() {
             </div>
 
             {/* Main Content */}
-            <PageContainer style={{ flex: 1, paddingTop: 24, paddingBottom: 48, width: "100%" }}>
+            <PageContainer className="flex-1 py-6 pb-12">
                 {/* Toolbar */}
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>

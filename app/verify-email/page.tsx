@@ -3,7 +3,8 @@
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Mail, Store } from "lucide-react";
+import { Mail } from "lucide-react";
+import { BrandLogo } from "@/components/ui";
 
 function CheckEmailContent() {
     const searchParams = useSearchParams();
@@ -36,11 +37,8 @@ export default function VerifyEmailIndexPage() {
     return (
         <div style={{ minHeight: "100vh", background: "#f9fafb", display: "flex", alignItems: "center", justifyContent: "center", padding: "48px 24px" }}>
             <div style={{ width: "100%", maxWidth: 448 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "center", marginBottom: 32 }}>
-                    <div style={{ height: 40, width: 40, borderRadius: 8, background: "#2563eb", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <Store style={{ height: 24, width: 24, color: "#fff" }} />
-                    </div>
-                    <span style={{ fontSize: 24, fontWeight: 700, color: "#111827" }}>Buy<span style={{ color: "#2563eb" }}>Bizz</span></span>
+                <div style={{ display: "flex", justifyContent: "center", marginBottom: 32 }}>
+                    <BrandLogo size={56} />
                 </div>
                 <Suspense fallback={<div style={{ textAlign: "center", padding: 32 }}>Loading...</div>}>
                     <CheckEmailContent />

@@ -11,12 +11,11 @@ import {
     LogOut,
     LayoutDashboard,
     ChevronDown,
-    Store,
     ArrowLeftRight,
 } from "lucide-react";
 import { useAuthStore } from "@/store/auth-store";
 import { useCartStore } from "@/store/cart-store";
-import { Avatar } from "@/components/ui";
+import { Avatar, BrandLogo } from "@/components/ui";
 import { PageContainer } from "./PageContainer";
 
 export function Navbar() {
@@ -75,23 +74,8 @@ export function Navbar() {
             <PageContainer as="nav">
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 56 }}>
                     {/* Logo */}
-                    <Link href="/" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none", flexShrink: 0 }}>
-                        <div
-                            style={{
-                                height: 28,
-                                width: 28,
-                                borderRadius: 8,
-                                background: "#2563eb",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                            }}
-                        >
-                            <Store style={{ height: 16, width: 16, color: "#fff" }} />
-                        </div>
-                        <span style={{ fontSize: 18, fontWeight: 600, color: "#111827", letterSpacing: "-0.01em" }}>
-                            Buy<span style={{ color: "#2563eb" }}>Bizz</span>
-                        </span>
+                    <Link href="/" style={{ display: "flex", alignItems: "center", textDecoration: "none", flexShrink: 0 }}>
+                        <BrandLogo size={36} />
                     </Link>
 
                     {/* Right section — Desktop */}
@@ -108,6 +92,19 @@ export function Navbar() {
                             }}
                         >
                             Products
+                        </Link>
+                        <Link
+                            href="/blog"
+                            style={{
+                                fontSize: 14,
+                                color: "#6b7280",
+                                padding: "8px 12px",
+                                borderRadius: 8,
+                                textDecoration: "none",
+                                transition: "background .15s",
+                            }}
+                        >
+                            Blog
                         </Link>
 
                         {isAuthenticated ? (
@@ -302,6 +299,7 @@ export function Navbar() {
                     <div className="md:hidden" style={{ padding: "12px 0", borderTop: "1px solid #f9fafb" }}>
                         <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                             <Link href="/products" style={{ display: "block", padding: "10px 12px", fontSize: 14, color: "#4b5563", borderRadius: 8, textDecoration: "none" }} onClick={() => setMobileMenuOpen(false)}>Products</Link>
+                            <Link href="/blog" style={{ display: "block", padding: "10px 12px", fontSize: 14, color: "#4b5563", borderRadius: 8, textDecoration: "none" }} onClick={() => setMobileMenuOpen(false)}>Blog</Link>
                             {isAuthenticated ? (
                                 <>
                                     <Link href="/cart" style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 12px", fontSize: 14, color: "#4b5563", borderRadius: 8, textDecoration: "none" }} onClick={() => setMobileMenuOpen(false)}>

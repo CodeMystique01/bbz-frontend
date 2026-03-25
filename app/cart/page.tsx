@@ -74,7 +74,7 @@ export default function CartPage() {
         <div className="min-h-screen flex flex-col bg-white">
             <Navbar />
 
-            <PageContainer className="flex-1 py-8" style={{ width: "100%" }}>
+            <PageContainer className="flex-1 py-8">
                 <div className="flex items-center justify-between mb-8">
                     <div>
                         <h1 className="text-xl font-semibold text-gray-900">Shopping Cart</h1>

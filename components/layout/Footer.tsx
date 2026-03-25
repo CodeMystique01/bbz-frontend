@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Store } from "lucide-react";
+import { BrandLogo } from "@/components/ui";
 import { PageContainer } from "./PageContainer";
 
 export function Footer() {
@@ -8,13 +8,8 @@ export function Footer() {
             <PageContainer style={{ paddingTop: 56, paddingBottom: 56 }}>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
                     <div className="col-span-2 md:col-span-1">
-                        <Link href="/" className="flex items-center gap-2 mb-4">
-                            <div className="h-8 w-8 rounded-lg bg-primary-600 flex items-center justify-center">
-                                <Store className="h-4.5 w-4.5 text-white" />
-                            </div>
-                            <span className="text-lg font-semibold text-white tracking-tight">
-                                Buy<span className="text-primary-400">Bizz</span>
-                            </span>
+                        <Link href="/" className="flex items-center mb-4">
+                            <BrandLogo size={36} />
                         </Link>
                         <p className="text-sm text-gray-500 leading-relaxed max-w-xs">
                             India&apos;s trusted digital marketplace. Buy and sell software, templates, and creative assets.

@@ -5,8 +5,8 @@ import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { Lock, Store } from "lucide-react";
-import { Button, Input } from "@/components/ui";
+import { Lock } from "lucide-react";
+import { Button, Input, BrandLogo } from "@/components/ui";
 import { apiClient } from "@/lib/api-client";
 
 export default function ResetPasswordPage() {
@@ -33,9 +33,8 @@ export default function ResetPasswordPage() {
     return (
         <div style={{ minHeight: "100vh", background: "#f9fafb", display: "flex", alignItems: "center", justifyContent: "center", padding: "48px 24px" }}>
             <div style={{ width: "100%", maxWidth: 448 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "center", marginBottom: 32 }}>
-                    <div style={{ height: 40, width: 40, borderRadius: 8, background: "#2563eb", display: "flex", alignItems: "center", justifyContent: "center" }}><Store style={{ height: 24, width: 24, color: "#fff" }} /></div>
-                    <span style={{ fontSize: 24, fontWeight: 700, color: "#111827" }}>Buy<span style={{ color: "#2563eb" }}>Bizz</span></span>
+                <div style={{ display: "flex", justifyContent: "center", marginBottom: 32 }}>
+                    <BrandLogo size={56} />
                 </div>
                 <div style={{ background: "#ffffff", borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.06)", border: "1px solid #e5e7eb", padding: 32 }}>
                     <h2 className="text-2xl font-bold text-gray-900 text-center mb-2">Set new password</h2>

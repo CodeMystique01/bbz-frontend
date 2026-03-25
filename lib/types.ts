@@ -221,6 +221,35 @@ export interface UploadResult {
     thumbnailUrl?: string;
 }
 
+// ── Blog ──
+export interface BlogPost {
+    id: string;
+    title: string;
+    content: string;
+    type: string;
+    status: "DRAFT" | "PUBLISHED";
+    excerpt?: string | null;
+    featuredImage?: string | null;
+    tags?: string | null;
+    metaTitle?: string | null;
+    metaDescription?: string | null;
+    slug?: string | null;
+    views: number;
+    authorId: string;
+    author?: { id: string; email: string; name?: string | null };
+    publishedAt?: string | null;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface BlogListResponse {
+    posts: BlogPost[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+}
+
 // ── Razorpay ──
 export interface RazorpayOrderResponse {
     id: string;          // Razorpay order ID (order_xxxxx)

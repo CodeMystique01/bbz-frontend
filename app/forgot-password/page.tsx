@@ -4,8 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { Mail, ArrowLeft, Store } from "lucide-react";
-import { Button, Input } from "@/components/ui";
+import { Mail, ArrowLeft } from "lucide-react";
+import { Button, Input, BrandLogo } from "@/components/ui";
 import { apiClient } from "@/lib/api-client";
 
 export default function ForgotPasswordPage() {
@@ -39,23 +39,8 @@ export default function ForgotPasswordPage() {
         >
             <div style={{ width: "100%", maxWidth: 400 }}>
                 {/* Logo */}
-                <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "center", marginBottom: 40 }}>
-                    <div
-                        style={{
-                            height: 36,
-                            width: 36,
-                            borderRadius: 10,
-                            background: "#2563eb",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                        }}
-                    >
-                        <Store style={{ height: 20, width: 20, color: "#fff" }} />
-                    </div>
-                    <span style={{ fontSize: 22, fontWeight: 600, color: "#111827", letterSpacing: "-0.01em" }}>
-                        Buy<span style={{ color: "#2563eb" }}>Bizz</span>
-                    </span>
+                <div style={{ display: "flex", justifyContent: "center", marginBottom: 40 }}>
+                    <BrandLogo size={52} />
                 </div>
 
                 {sent ? (

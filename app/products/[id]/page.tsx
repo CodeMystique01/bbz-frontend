@@ -116,7 +116,7 @@ export default function ProductDetailPage() {
         <div className="min-h-screen flex flex-col bg-white">
             <Navbar />
 
-            <PageContainer style={{ flex: 1, width: "100%", paddingTop: 32, paddingBottom: 48 }}>
+            <PageContainer className="flex-1 py-8 pb-12">
                 <button
                     onClick={() => router.back()}
                     className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 mb-6 cursor-pointer"

@@ -65,7 +65,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div style={{ minHeight: "100vh", background: "#ffffff" }}>
+    <div className="min-h-screen bg-white">
       <Navbar />
 
       {/* ═══════════════════ HERO ═══════════════════ */}
@@ -192,7 +192,7 @@ export default function HomePage() {
       {/* ═══════════════════ STATS ═══════════════════ */}
       <section style={{ borderBottom: "1px solid #f3f4f6", padding: "24px 0" }}>
         <PageContainer>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
               { label: "Digital Products", value: totalProducts > 0 ? `${totalProducts.toLocaleString("en-IN")}+` : "—", icon: Package },
               { label: "Active Vendors", value: "200+", icon: Users },
@@ -238,7 +238,7 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {CATEGORIES.map((c) => (
               <Link
                 key={c.name}
@@ -294,7 +294,7 @@ export default function HomePage() {
           </div>
 
           {isLoadingProducts ? (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {Array.from({ length: 6 }, (_, i) => (
                 <div key={i} style={{ background: "#ffffff", borderRadius: 14, border: "1px solid #e5e7eb", overflow: "hidden" }}>
                   <div style={{ height: 160, background: "linear-gradient(135deg, #f3f4f6, #e5e7eb)" }} />
@@ -312,7 +312,7 @@ export default function HomePage() {
               <p>Products coming soon — check back later!</p>
             </div>
           ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {featuredProducts.map((p) => (
                 <Link
                   key={p.id}
@@ -426,7 +426,7 @@ export default function HomePage() {
           <h2 style={{ fontSize: 26, fontWeight: 700, color: "#111827", margin: 0 }}>How It Works</h2>
           <p style={{ marginTop: 8, fontSize: 14, color: "#9ca3af" }}>Get started in three simple steps</p>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 40, marginTop: 48 }}>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mt-12">
             {[
               { step: "01", title: "Create Your Account", desc: "Sign up in seconds as a buyer or vendor. Verify your email and you're ready to go.", icon: Users },
               { step: "02", title: "Browse & Discover", desc: "Search thousands of digital products by category, price, and rating.", icon: Search },
@@ -466,7 +466,7 @@ export default function HomePage() {
             <p style={{ marginTop: 8, fontSize: 14, color: "#9ca3af" }}>See what our community has to say</p>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {REVIEWS.map((r) => (
               <div
                 key={r.name}
@@ -516,7 +516,7 @@ export default function HomePage() {
       {/* ═══════════════════ VENDOR CTA ═══════════════════ */}
       <section style={{ padding: "80px 0", background: "#111827" }}>
         <PageContainer>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center" }}>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             {/* Left */}
             <div>
               <span
@@ -704,7 +704,7 @@ export default function HomePage() {
           <p style={{ fontSize: 14, color: "#9ca3af", margin: "0 0 28px", lineHeight: 1.7 }}>
             Join thousands of buyers and creators on India&apos;s most trusted digital product marketplace.
           </p>
-          <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
             {!isAuthenticated ? (
               <Link
                 href="/signup"

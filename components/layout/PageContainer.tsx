@@ -9,7 +9,8 @@ export function PageContainer({ children, className, style, as: Tag = "div" }: P
     return (
         <Tag
             style={{
-                maxWidth: 1100,
+                width: "100%",
+                maxWidth: 1280,
                 marginLeft: "auto",
                 marginRight: "auto",
                 paddingLeft: 24,

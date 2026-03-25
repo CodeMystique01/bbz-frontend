@@ -3,7 +3,8 @@
 import { useState, useEffect, Suspense } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { CheckCircle2, XCircle, Loader2, Store } from "lucide-react";
+import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { BrandLogo } from "@/components/ui";
 import { apiClient } from "@/lib/api-client";
 
 type Status = "loading" | "success" | "error";
@@ -74,11 +75,8 @@ export default function VerifyEmailPage() {
     return (
         <div style={{ minHeight: "100vh", background: "#f9fafb", display: "flex", alignItems: "center", justifyContent: "center", padding: "48px 24px" }}>
             <div style={{ width: "100%", maxWidth: 448, textAlign: "center" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "center", marginBottom: 32 }}>
-                    <div style={{ height: 40, width: 40, borderRadius: 8, background: "#2563eb", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <Store style={{ height: 24, width: 24, color: "#fff" }} />
-                    </div>
-                    <span style={{ fontSize: 24, fontWeight: 700, color: "#111827" }}>Buy<span style={{ color: "#2563eb" }}>Bizz</span></span>
+                <div style={{ display: "flex", justifyContent: "center", marginBottom: 32 }}>
+                    <BrandLogo size={56} />
                 </div>
                 <Suspense fallback={
                     <div style={{ background: "#fff", borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.06)", border: "1px solid #e5e7eb", padding: 32, display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
