@@ -16,6 +16,7 @@ interface AuthState {
     user: AuthUser | null;
     isAuthenticated: boolean;
     activeRole: "BUYER" | "VENDOR";
+    _hasHydrated: boolean;
 
     login: (token: string, user: AuthUser) => void;
     logout: () => void;
@@ -30,6 +31,7 @@ export const useAuthStore = create<AuthState>()(
             user: null,
             isAuthenticated: false,
             activeRole: "BUYER",
+            _hasHydrated: false,
 
             login: (token, user) =>
                 set({
@@ -50,6 +52,9 @@ export const useAuthStore = create<AuthState>()(
         }),
         {
             name: "auth-storage",
+            onRehydrateStorage: () => () => {
+                useAuthStore.setState({ _hasHydrated: true });
+            },
         }
     )
 );

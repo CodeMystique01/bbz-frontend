@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Users, Package, ShoppingBag, DollarSign, TrendingUp, TrendingDown } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
 import type { AdminDashboard } from "@/lib/types";
@@ -67,10 +68,10 @@ export default function AdminDashboardPage() {
                         { label: "View Orders", href: "/admin/orders" },
                         { label: "Payouts", href: "/admin/payouts" },
                     ].map((action) => (
-                        <a key={action.label} href={action.href}
+                        <Link key={action.label} href={action.href}
                             className="p-3 rounded-lg border border-gray-100 text-center text-xs font-medium text-gray-500 hover:bg-gray-50 hover:border-gray-200 hover:text-gray-900 transition-colors">
                             {action.label}
-                        </a>
+                        </Link>
                     ))}
                 </div>
             </div>

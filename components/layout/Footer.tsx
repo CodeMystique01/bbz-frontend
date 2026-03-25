@@ -45,8 +45,6 @@ export function Footer() {
                     <p className="text-xs text-gray-600">&copy; {new Date().getFullYear()} BuyBizz. All rights reserved.</p>
                     <div className="flex items-center gap-4 text-xs text-gray-600">
                         <span>Made in India 🇮🇳</span>
-                        <span>•</span>
-                        <span>Powered by Razorpay</span>
                     </div>
                 </div>
             </PageContainer>

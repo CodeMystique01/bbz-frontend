@@ -177,7 +177,7 @@ export default function HomePage() {
             {[
               { icon: Shield, color: "#4ade80", label: "Secure Payments" },
               { icon: Star, color: "#fbbf24", label: "Verified Vendors" },
-              { icon: CreditCard, color: "#60a5fa", label: "Razorpay Powered" },
+              { icon: CreditCard, color: "#60a5fa", label: "Instant Checkout" },
               { icon: Zap, color: "#facc15", label: "Instant Delivery" },
             ].map((b) => (
               <span key={b.label} style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -430,7 +430,7 @@ export default function HomePage() {
             {[
               { step: "01", title: "Create Your Account", desc: "Sign up in seconds as a buyer or vendor. Verify your email and you're ready to go.", icon: Users },
               { step: "02", title: "Browse & Discover", desc: "Search thousands of digital products by category, price, and rating.", icon: Search },
-              { step: "03", title: "Purchase Securely", desc: "Pay securely via Razorpay. Get instant access with license key delivery.", icon: Shield },
+              { step: "03", title: "Purchase Securely", desc: "Pay securely and get instant access to your purchases with license key delivery.", icon: Shield },
             ].map((s) => (
               <div key={s.step}>
                 <div
@@ -545,7 +545,7 @@ export default function HomePage() {
                 {[
                   "Zero listing fees — no upfront costs",
                   "Real-time analytics & sales tracking",
-                  "Automated payouts via RazorpayX",
+                  "Automated payouts directly to your bank",
                   "Built-in messaging with buyers",
                   "License key management included",
                 ].map((f) => (

@@ -18,17 +18,17 @@ const roleDashboard: Record<string, string> = {
 export function AuthGuard({ children, requiredRole }: AuthGuardProps) {
     const router = useRouter();
     const pathname = usePathname();
-    const { isAuthenticated, user } = useAuthStore();
+    const { isAuthenticated, user, _hasHydrated } = useAuthStore();
     const [checked, setChecked] = useState(false);
 
     useEffect(() => {
-        // Not logged in → send to login
+        if (!_hasHydrated) return;
+
         if (!isAuthenticated || !user) {
             router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
             return;
         }
 
-        // Logged in but wrong role → send to their dashboard
         if (requiredRole) {
             const hasAccess =
                 requiredRole === "VENDOR"
@@ -46,7 +46,7 @@ export function AuthGuard({ children, requiredRole }: AuthGuardProps) {
         }
 
         setChecked(true);
-    }, [isAuthenticated, user, requiredRole, router, pathname]);
+    }, [_hasHydrated, isAuthenticated, user, requiredRole, router, pathname]);
 
     if (!checked) {
         return (

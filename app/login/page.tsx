@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -17,6 +17,7 @@ interface LoginForm {
 
 export default function LoginPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { login } = useAuthStore();
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -32,8 +33,14 @@ export default function LoginPage() {
             const res = await apiClient.post<{ access_token: string; user: AuthUser }>("/api/auth/login", data);
             login(res.access_token, res.user);
             toast.success("Welcome back!");
-            if (res.user.role === "ADMIN") router.push("/admin");
-            else router.push("/");
+            const redirect = searchParams.get("redirect");
+            if (redirect && redirect.startsWith("/")) {
+                router.push(redirect);
+            } else if (res.user.role === "ADMIN") {
+                router.push("/admin");
+            } else {
+                router.push("/");
+            }
         } catch (err: unknown) {
             toast.error(err instanceof Error ? err.message : "Login failed");
         } finally {
