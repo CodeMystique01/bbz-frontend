@@ -264,3 +264,56 @@ export interface RazorpaySuccessResponse {
     razorpay_order_id: string;
     razorpay_signature: string;
 }
+
+export interface PaymentVerifyResponse {
+    success: boolean;
+    orderId: string;
+    paymentId: string;
+}
+
+// ── Payouts ──
+export type PayoutStatus = "PENDING" | "APPROVED" | "PROCESSING" | "COMPLETED" | "FAILED" | "CANCELLED" | "REJECTED";
+export type PayoutMethod = "BANK_TRANSFER" | "UPI" | "WALLET";
+
+export interface PayoutRequest {
+    id: string;
+    vendorId: string;
+    amount: number;
+    currency: string;
+    paymentMethod: PayoutMethod;
+    status: PayoutStatus;
+    requestedAt: string;
+    approvedAt?: string | null;
+    processedAt?: string | null;
+    completedAt?: string | null;
+    failedAt?: string | null;
+    failureReason?: string | null;
+    adminNotes?: string | null;
+    vendor?: { id: string; email: string };
+    approver?: { id: string; email: string } | null;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface PayoutRequestsResponse {
+    requests: PayoutRequest[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+}
+
+export interface AdminPayoutsSummary {
+    totalCommissionEarned: number;
+    totalVendorEarnings: number;
+    totalSalesVolume: number;
+    totalRefunded: number;
+    totalEarningsCount: number;
+    totalPayoutRequests: number;
+    totalPayoutAmount: number;
+    pendingPayouts: number;
+    completedPayouts: number;
+    failedPayouts: number;
+    earningsByStatus: Record<string, { amount: number; count: number }>;
+    payoutsByStatus: Record<string, { amount: number; count: number }>;
+}

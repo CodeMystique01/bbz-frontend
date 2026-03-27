@@ -11,7 +11,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Button, Spinner } from "@/components/ui";
 import { formatPrice } from "@/lib/utils";
 import { toast } from "sonner";
-import type { RazorpayOrderResponse, RazorpaySuccessResponse } from "@/lib/types";
+import type { RazorpayOrderResponse, RazorpaySuccessResponse, PaymentVerifyResponse } from "@/lib/types";
 
 // ── Razorpay type declarations ──────────────────────────────
 declare global {
@@ -109,16 +109,34 @@ export default function CheckoutPage() {
                 name: "BuyBizz",
                 description: `Payment for ${itemCount} item${itemCount > 1 ? "s" : ""}`,
                 order_id: razorpayOrder.id,
-                handler: (response: RazorpaySuccessResponse) => {
-                    // Payment successful
-                    setOrderConfirmed({
-                        orderId: razorpayOrder.id,
-                        amount: razorpayOrder.amount,
-                        paymentId: response.razorpay_payment_id,
-                    });
-                    reset();
-                    toast.success("Payment successful!");
-                    setIsProcessing(false);
+                handler: async (response: RazorpaySuccessResponse) => {
+                    try {
+                        const verification = await apiClient.post<PaymentVerifyResponse>(
+                            "/api/payments/verify",
+                            {
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_signature: response.razorpay_signature,
+                            }
+                        );
+                        setOrderConfirmed({
+                            orderId: verification.orderId,
+                            amount: razorpayOrder.amount,
+                            paymentId: verification.paymentId,
+                        });
+                        reset();
+                        toast.success("Payment successful!");
+                    } catch {
+                        setOrderConfirmed({
+                            orderId: razorpayOrder.id,
+                            amount: razorpayOrder.amount,
+                            paymentId: response.razorpay_payment_id,
+                        });
+                        reset();
+                        toast.success("Payment received! Your order will be confirmed shortly.");
+                    } finally {
+                        setIsProcessing(false);
+                    }
                 },
                 prefill: {
                     email: user?.email || "",
