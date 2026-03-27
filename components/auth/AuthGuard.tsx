@@ -21,6 +21,16 @@ export function AuthGuard({ children, requiredRole }: AuthGuardProps) {
     const { isAuthenticated, user, _hasHydrated } = useAuthStore();
     const [checked, setChecked] = useState(false);
 
+    // Safety: if hydration hasn't completed after 3s, force it so we don't spin forever
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (!useAuthStore.getState()._hasHydrated) {
+                useAuthStore.setState({ _hasHydrated: true });
+            }
+        }, 3000);
+        return () => clearTimeout(timer);
+    }, []);
+
     useEffect(() => {
         if (!_hasHydrated) return;
 
