@@ -125,7 +125,7 @@ export default function HomePage() {
             }}
           >
             Discover software, templates, courses, and creative assets from
-            verified vendors — at prices that will surprise you.
+            verified vendors at prices that will surprise you.
           </p>
 
           {/* Search Bar */}
