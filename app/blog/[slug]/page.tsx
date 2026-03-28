@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft, Calendar, User, Eye, Tag } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
 import type { BlogPost } from "@/lib/types";
@@ -100,8 +101,11 @@ export default function BlogDetailPage() {
 
                 {post.featuredImage && (
                     <div style={{ marginBottom: 32, borderRadius: 12, overflow: "hidden" }}>
-                        <img src={post.featuredImage} alt={post.title}
-                            style={{ width: "100%", maxHeight: 440, objectFit: "cover", display: "block" }} />
+                        <Image src={post.featuredImage} alt={post.title}
+                            width={760} height={440}
+                            sizes="(max-width: 768px) 100vw, 760px"
+                            style={{ width: "100%", height: "auto", maxHeight: 440, objectFit: "cover", display: "block" }}
+                            priority />
                     </div>
                 )}
 

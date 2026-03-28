@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { FileText, Calendar, User, Eye, ChevronLeft, ChevronRight, Tag } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
 import type { BlogPost, BlogListResponse } from "@/lib/types";
@@ -81,7 +82,7 @@ export default function BlogListingPage() {
                 ) : (
                     <>
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 24 }}>
-                            {posts.map((post) => (
+                            {posts.map((post, index) => (
                                 <Link key={post.id} href={`/blog/${post.slug}`} style={{ textDecoration: "none" }}>
                                     <article style={{
                                         borderRadius: 12, border: "1px solid #f3f4f6", overflow: "hidden",
@@ -91,10 +92,13 @@ export default function BlogListingPage() {
                                         className="hover:shadow-md hover:border-gray-200"
                                     >
                                         {post.featuredImage ? (
-                                            <div style={{ aspectRatio: "16/9", overflow: "hidden", background: "#f9fafb" }}>
-                                                <img src={post.featuredImage} alt={post.title}
-                                                    style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.3s" }}
-                                                    className="hover:scale-105" />
+                                            <div style={{ aspectRatio: "16/9", overflow: "hidden", background: "#f9fafb", position: "relative" }}>
+                                                <Image src={post.featuredImage} alt={post.title}
+                                                    fill
+                                                    sizes="(max-width: 768px) 100vw, 33vw"
+                                                    style={{ objectFit: "cover", transition: "transform 0.3s" }}
+                                                    className="hover:scale-105"
+                                                    priority={index === 0} />
                                             </div>
                                         ) : (
                                             <div style={{ aspectRatio: "16/9", background: "linear-gradient(135deg, #eff6ff, #f0fdf4)", display: "flex", alignItems: "center", justifyContent: "center" }}>
